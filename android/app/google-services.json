@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "963698986672",
+    "project_id": "donemprojesi-d99fe",
+    "storage_bucket": "donemprojesi-d99fe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:963698986672:android:42d113a55cb88728bc3575",
+        "android_client_info": {
+          "package_name": "com.example.donemprojesi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUCHVYKW97xm9bgEFApfeJLB5Pomg8lBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

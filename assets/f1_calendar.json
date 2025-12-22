@@ -1,0 +1,402 @@
+[
+  {
+    "name": "Bahar GP'si",
+    "race_date": "2025-03-16T16:00:00",
+    "country": "Bahreyn",
+    "flagUrl": "https://flagcdn.com/w320/bh.png",
+    "kusbakisiAsset": "assets/images/pistler/bahrain_kusbakisi.png",
+    "turns": "15",
+    "length": "5.412 km",
+    "lap_record": "1:30.252 - C. Sainz (2023)",
+    "drs_zones": "3",
+    "first_gp": "2004",
+    "laps": "57",
+    "race_distance": "308.238 km",
+    "technical_analysis": {
+      "passing_opportunities": "Birçok uzun düzlük ve DRS bölgesi geçişe olanak sağlar.",
+      "tire_wear": "Orta seviyede lastik aşınması, strateji önemli.",
+      "weather_advantage": "Sıcak hava lastik performansını etkiler.",
+      "trivia": "Gece yarışı olarak bilinir, aydınlatmalar etkileyici."
+    }
+  },
+  {
+    "name": "Suudi Arabistan GP'si",
+    "race_date": "2025-03-30T17:00:00",
+    "country": "Suudi Arabistan",
+    "flagUrl": "https://flagcdn.com/w320/sa.png",
+    "kusbakisiAsset": "assets/images/pistler/saudi_arabia_kusbakisi.png",
+    "turns": "27",
+    "length": "6.174 km",
+    "lap_record": "1:27.511 - M. Verstappen (2023)",
+    "drs_zones": "3",
+    "first_gp": "2021",
+    "laps": "50",
+    "race_distance": "308.450 km",
+    "technical_analysis": {
+      "passing_opportunities": "Uzun düzlüğü ve viraj çıkışları geçişi kolaylaştırır.",
+      "tire_wear": "Yüksek lastik aşınması, strateji kritik.",
+      "weather_advantage": "Sıcak ve rüzgarlı hava lastikleri etkiler.",
+      "trivia": "Gece şehri yarışı, hızlı ve teknik sokak pistidir."
+    }
+  },
+  {
+    "name": "Avustralya GP'si",
+    "race_date": "2025-04-13T06:00:00",
+    "country": "Avustralya",
+    "flagUrl": "https://flagcdn.com/w320/au.png",
+    "kusbakisiAsset": "assets/images/pistler/australia_kusbakisi.png",
+    "turns": "16",
+    "length": "5.278 km",
+    "lap_record": "1:20.260 - M. Verstappen (2023)",
+    "drs_zones": "2",
+    "first_gp": "1985",
+    "laps": "58",
+    "race_distance": "306.124 km",
+    "technical_analysis": {
+      "passing_opportunities": "Uzun düzlüklerde DRS ile geçiş mümkün.",
+      "tire_wear": "Orta seviyede lastik aşınması, yol tutuş önemli.",
+      "weather_advantage": "Değişken hava koşulları stratejiyi etkiler.",
+      "trivia": "Sezona erken damgasını vuran klasik pist."
+    }
+  },
+  {
+    "name": "Monako Grand Prix'si",
+    "race_date": "2025-05-25T16:00:00",
+    "country": "Monako",
+    "flagUrl": "https://flagcdn.com/w320/mc.png",
+    "kusbakisiAsset": "assets/images/pistler/monaco_kusbakisi.png",
+    "turns": "19",
+    "length": "3.337 km",
+    "lap_record": "1:12.909 - L. Hamilton (2021)",
+    "drs_zones": "1",
+    "first_gp": "1950",
+    "laps": "78",
+    "race_distance": "260.286 km",
+    "technical_analysis": {
+      "passing_opportunities": "Geçiş çok zordur, genellikle tünel sonrası şikana yöneliktir.",
+      "tire_wear": "Düşük lastik aşınması, yavaş virajlardan dolayı.",
+      "weather_advantage": "Yağmurda kaos yaşanabilir, güvenlik aracı ihtimali yüksektir.",
+      "trivia": "En prestijli yarışlardan biri olup, pilot hatası affetmeyen dar sokaklara sahiptir."
+    }
+  },
+  {
+    "name": "İspanya Grand Prix'si",
+    "race_date": "2025-06-01T16:00:00",
+    "country": "İspanya",
+    "flagUrl": "https://flagcdn.com/w320/es.png",
+    "kusbakisiAsset": "assets/images/pistler/spain_kusbakisi.png",
+    "turns": "16",
+    "length": "4.675 km",
+    "lap_record": "1:18.149 - M. Verstappen (2021)",
+    "drs_zones": "2",
+    "first_gp": "1951",
+    "laps": "66",
+    "race_distance": "308.424 km",
+    "technical_analysis": {
+      "passing_opportunities": "Ana düzlükte DRS ile geçiş mümkündür.",
+      "tire_wear": "Yüksek lastik aşınması, özellikle sol ön lastikte.",
+      "weather_advantage": "Sıcak havalarda lastik yönetimi daha zor olabilir.",
+      "trivia": "Sezon öncesi testlerin yapıldığı popüler bir pisttir."
+    }
+  },
+  {
+    "name": "Kanada Grand Prix'si",
+    "race_date": "2025-06-15T21:00:00",
+    "country": "Kanada",
+    "flagUrl": "https://flagcdn.com/w320/ca.png",
+    "kusbakisiAsset": "assets/images/pistler/canada_kusbakisi.png",
+    "turns": "14",
+    "length": "4.361 km",
+    "lap_record": "1:13.078 - V. Bottas (2019)",
+    "drs_zones": "2",
+    "first_gp": "1967",
+    "laps": "70",
+    "race_distance": "305.27 km",
+    "technical_analysis": {
+      "passing_opportunities": "Uzun düzlükler sayesinde DRS bölgelerinde geçiş mümkündür.",
+      "tire_wear": "Orta seviyede lastik aşınması.",
+      "weather_advantage": "Ani yağmurlar yarışın kaderini etkileyebilir.",
+      "trivia": "Duvara en yakın virajda 'Wall of Champions' olarak bilinen bölge vardır."
+    }
+  },
+  {
+    "name": "Avusturya Grand Prix'si",
+    "race_date": "2025-06-29T16:00:00",
+    "country": "Avusturya",
+    "flagUrl": "https://flagcdn.com/w320/at.png",
+    "kusbakisiAsset": "assets/images/pistler/austria_kusbakisi.png",
+    "turns": "10",
+    "length": "4.318 km",
+    "lap_record": "1:05.619 - C. Sainz (2020)",
+    "drs_zones": "3",
+    "first_gp": "1970",
+    "laps": "71",
+    "race_distance": "306.452 km",
+    "technical_analysis": {
+      "passing_opportunities": "Birden fazla DRS bölgesiyle bol geçiş fırsatı sunar.",
+      "tire_wear": "Düşük lastik aşınması, kısa pist turu avantaj sağlar.",
+      "weather_advantage": "Dağlık yapısı ani hava değişimlerine neden olabilir.",
+      "trivia": "En kısa tur zamanına sahip pistlerden biridir."
+    }
+  },
+  {
+    "name": "Britanya Grand Prix'si",
+    "race_date": "2025-07-06T17:00:00",
+    "country": "Birleşik Krallık",
+    "flagUrl": "https://flagcdn.com/w320/gb.png",
+    "kusbakisiAsset": "assets/images/pistler/british_kusbakisi.png",
+    "turns": "18",
+    "length": "5.891 km",
+    "lap_record": "1:27.097 - M. Verstappen (2020)",
+    "drs_zones": "2",
+    "first_gp": "1950",
+    "laps": "52",
+    "race_distance": "306.198 km",
+    "technical_analysis": {
+      "passing_opportunities": "Maggotts-Becketts-Chapel sonrası uzun düzlükte geçiş fırsatları vardır.",
+      "tire_wear": "Yüksek hızlar lastiklere yük bindirir, orta-yüksek aşınma.",
+      "weather_advantage": "Değişken hava koşulları sık görülür.",
+      "trivia": "İlk F1 yarışı burada yapılmıştır."
+    }
+  },
+  {
+    "name": "Belçika Grand Prix'si",
+    "race_date": "2025-07-27T16:00:00",
+    "country": "Belçika",
+    "flagUrl": "https://flagcdn.com/w320/be.png",
+    "kusbakisiAsset": "assets/images/pistler/belgium_kusbakisi.png",
+    "turns": "19",
+    "length": "7.004 km",
+    "lap_record": "1:46.286 - L. Hamilton (2020)",
+    "drs_zones": "3",
+    "first_gp": "1925",
+    "laps": "44",
+    "race_distance": "308.052 km",
+    "technical_analysis": {
+      "passing_opportunities": "Yağmurlu havalarda geçişler daha kolaydır.",
+      "tire_wear": "Yüksek lastik aşınması, özellikle lastik seçimi önemlidir.",
+      "weather_advantage": "Sık yağmur ve değişken hava koşulları yarışları etkiler.",
+      "trivia": "Efsanevi Spa-Francorchamps pistinde yapılır."
+    }
+  },
+  {
+    "name": "Macaristan Grand Prix'si",
+    "race_date": "2025-08-03T16:00:00",
+    "country": "Macaristan",
+    "flagUrl": "https://flagcdn.com/w320/hu.png",
+    "kusbakisiAsset": "assets/images/pistler/hungary_kusbakisi.png",
+    "turns": "14",
+    "length": "4.381 km",
+    "lap_record": "1:16.627 - M. Verstappen (2023)",
+    "drs_zones": "2",
+    "first_gp": "1936",
+    "laps": "70",
+    "race_distance": "306.63 km",
+    "technical_analysis": {
+      "passing_opportunities": "Dar virajlar geçişi zorlaştırır.",
+      "tire_wear": "Orta seviyede lastik aşınması.",
+      "weather_advantage": "Sıcak hava lastik performansını etkiler.",
+      "trivia": "Yaz tatili öncesi önemli bir yarış."
+    }
+  },
+  {
+    "name": "Hollanda Grand Prix'si",
+    "race_date": "2025-08-31T16:00:00",
+    "country": "Hollanda",
+    "flagUrl": "https://flagcdn.com/w320/nl.png",
+    "kusbakisiAsset": "assets/images/pistler/netherlands_kusbakisi.png",
+    "turns": "14",
+    "length": "4.259 km",
+    "lap_record": "1:11.097 - M. Verstappen (2023)",
+    "drs_zones": "2",
+    "first_gp": "1952",
+    "laps": "72",
+    "race_distance": "306.648 km",
+    "technical_analysis": {
+      "passing_opportunities": "Uzun düzlükler ve DRS bölgeleri geçişe olanak tanır.",
+      "tire_wear": "Orta seviyede lastik aşınması.",
+      "weather_advantage": "Sık sık değişen hava yarış stratejilerini etkiler.",
+      "trivia": "Max Verstappen'in ev yarışı olarak çok önemlidir."
+    }
+  },
+  {
+    "name": "İtalya Grand Prix'si",
+    "race_date": "2025-09-07T16:00:00",
+    "country": "İtalya",
+    "flagUrl": "https://flagcdn.com/w320/it.png",
+    "kusbakisiAsset": "assets/images/pistler/italy_kusbakisi.png",
+    "turns": "11",
+    "length": "5.793 km",
+    "lap_record": "1:21.046 - C. Sainz (2023)",
+    "drs_zones": "2",
+    "first_gp": "1950",
+    "laps": "53",
+    "race_distance": "306.72 km",
+    "technical_analysis": {
+      "passing_opportunities": "Hızlı virajlar ve DRS ile geçiş mümkün.",
+      "tire_wear": "Yüksek lastik aşınması özellikle ön lastiklerde.",
+      "weather_advantage": "Genellikle kuru hava, lastik yönetimi önemli.",
+      "trivia": "Monza pistinde yüksek hızlar öne çıkar."
+    }
+  },
+  {
+    "name": "Azerbaycan Grand Prix'si",
+    "race_date": "2025-09-21T14:00:00",
+    "country": "Azerbaycan",
+    "flagUrl": "https://flagcdn.com/w320/az.png",
+    "kusbakisiAsset": "assets/images/pistler/azerbaijan_kusbakisi.png",
+    "turns": "20",
+    "length": "6.003 km",
+    "lap_record": "1:40.203 - S. Perez (2021)",
+    "drs_zones": "3",
+    "first_gp": "2016",
+    "laps": "51",
+    "race_distance": "306.049 km",
+    "technical_analysis": {
+      "passing_opportunities": "Uzun düzlükler ve viraj çıkışlarında geçiş mümkün.",
+      "tire_wear": "Orta seviyede lastik aşınması.",
+      "weather_advantage": "Sıcak hava lastik performansını etkiler.",
+      "trivia": "Dar sokaklarda sıkça kaza yaşanır."
+    }
+  },
+  {
+    "name": "Singapur Grand Prix'si",
+    "race_date": "2025-10-05T15:00:00",
+    "country": "Singapur",
+    "flagUrl": "https://flagcdn.com/w320/sg.png",
+    "kusbakisiAsset": "assets/images/pistler/singapore_kusbakisi.png",
+    "turns": "23",
+    "length": "5.063 km",
+    "lap_record": "1:36.015 - M. Verstappen (2023)",
+    "drs_zones": "2",
+    "first_gp": "2008",
+    "laps": "61",
+    "race_distance": "308.706 km",
+    "technical_analysis": {
+      "passing_opportunities": "Geçiş çok zordur, strateji ve güvenlik aracı kritik.",
+      "tire_wear": "Yüksek lastik aşınması ve yüksek sıcaklık.",
+      "weather_advantage": "Nem ve yağmur yarışın seyrini etkiler.",
+      "trivia": "Gece sokak yarışı, çok zorlu bir pist."
+    }
+  },
+  {
+    "name": "ABD Grand Prix'si",
+    "race_date": "2025-10-19T22:00:00",
+    "country": "Amerika Birleşik Devletleri",
+    "flagUrl": "https://flagcdn.com/w320/us.png",
+    "kusbakisiAsset": "assets/images/pistler/usa_kusbakisi.png",
+    "turns": "20",
+    "length": "5.513 km",
+    "lap_record": "1:34.742 - M. Verstappen (2023)",
+    "drs_zones": "3",
+    "first_gp": "2012",
+    "laps": "56",
+    "race_distance": "308.405 km",
+    "technical_analysis": {
+      "passing_opportunities": "Çok sayıda DRS bölgesi geçişi kolaylaştırır.",
+      "tire_wear": "Orta seviyede lastik aşınması.",
+      "weather_advantage": "Değişken hava koşulları stratejiyi etkiler.",
+      "trivia": "Austin pistinde modern ve teknik bir yarış."
+    }
+  },
+  {
+    "name": "Mexico City Grand Prix'si",
+    "race_date": "2025-10-26T23:00:00",
+    "country": "Meksika",
+    "flagUrl": "https://flagcdn.com/w320/mx.png",
+    "kusbakisiAsset": "assets/images/pistler/mexico_kusbakisi.png",
+    "turns": "17",
+    "length": "4.304 km",
+    "lap_record": "1:14.758 - M. Verstappen (2023)",
+    "drs_zones": "2",
+    "first_gp": "1962",
+    "laps": "71",
+    "race_distance": "305.879 km",
+    "technical_analysis": {
+      "passing_opportunities": "Yüksek irtifa etkisiyle motor gücü düşer, DRS bölgeleri geçiş için kritik.",
+      "tire_wear": "Orta seviyede lastik aşınması, özellikle ön lastiklere dikkat edilmeli.",
+      "weather_advantage": "Genellikle kuru ve güneşli hava hakimdir, yağmur nadirdir.",
+      "trivia": "Yüksek rakım nedeniyle araç performansı diğer pistlere göre farklılık gösterir."
+    }
+  },
+  {
+    "name": "Brezilya Grand Prix'si",
+    "race_date": "2025-11-09T20:00:00",
+    "country": "Brezilya",
+    "flagUrl": "https://flagcdn.com/w320/br.png",
+    "kusbakisiAsset": "assets/images/pistler/brazil_kusbakisi.png",
+    "turns": "15",
+    "length": "4.309 km",
+    "lap_record": "1:10.540 - M. Verstappen (2022)",
+    "drs_zones": "2",
+    "first_gp": "1973",
+    "laps": "71",
+    "race_distance": "305.909 km",
+    "technical_analysis": {
+      "passing_opportunities": "Uzun düzlüklerde DRS ile geçişler mümkün.",
+      "tire_wear": "Orta seviyede lastik aşınması, lastik yönetimi önemli.",
+      "weather_advantage": "Yağmur riski vardır, yarış stratejisini etkiler.",
+      "trivia": "Efsanevi Interlagos pistinde yapılır."
+    }
+  },
+  {
+    "name": "Las Vegas Grand Prix'si",
+    "race_date": "2025-11-23T07:00:00",
+    "country": "Amerika Birleşik Devletleri",
+    "flagUrl": "https://flagcdn.com/w320/us.png",
+    "kusbakisiAsset": "assets/images/pistler/las_vegas_kusbakisi.png",
+    "turns": "14",
+    "length": "6.120 km",
+    "lap_record": "Yok (Yeni yarış)",
+    "drs_zones": "3",
+    "first_gp": "2023",
+    "laps": "50",
+    "race_distance": "306.000 km",
+    "technical_analysis": {
+      "passing_opportunities": "Uzun düzlükler ve 3 DRS bölgesi geçişe olanak sağlar.",
+      "tire_wear": "Yüksek lastik aşınması, lastik yönetimi çok önemli.",
+      "weather_advantage": "Çöl iklimi sıcak ve kuru.",
+      "trivia": "Gece sokak yarışı, modern ve gösterişli bir pist."
+    }
+  },
+  {
+    "name": "Katar Grand Prix'si",
+    "race_date": "2025-11-30T19:00:00",
+    "country": "Katar",
+    "flagUrl": "https://flagcdn.com/w320/qa.png",
+    "kusbakisiAsset": "assets/images/pistler/qatar_kusbakisi.png",
+    "turns": "16",
+    "length": "5.380 km",
+    "lap_record": "1:20.827 - M. Verstappen (2021)",
+    "drs_zones": "3",
+    "first_gp": "2021",
+    "laps": "57",
+    "race_distance": "306.660 km",
+    "technical_analysis": {
+      "passing_opportunities": "Uzun düzlükler sayesinde DRS ile geçiş yapılabilir.",
+      "tire_wear": "Orta seviyede lastik aşınması.",
+      "weather_advantage": "Sıcak ve kuru iklim, lastik yönetimini etkiler.",
+      "trivia": "Yarış genellikle gece saatlerinde yapılır."
+    }
+  },
+  {
+    "name": "Abu Dhabi Grand Prix'si",
+    "race_date": "2025-12-07T16:00:00",
+    "country": "Birleşik Arap Emirlikleri",
+    "flagUrl": "https://flagcdn.com/w320/ae.png",
+    "kusbakisiAsset": "assets/images/pistler/abu_dhabi_kusbakisi.png",
+    "turns": "21",
+    "length": "5.281 km",
+    "lap_record": "1:26.103 - M. Verstappen (2021)",
+    "drs_zones": "2",
+    "first_gp": "2009",
+    "laps": "55",
+    "race_distance": "290.733 km",
+    "technical_analysis": {
+      "passing_opportunities": "DRS bölgeleri ile stratejik geçişlere imkan tanır.",
+      "tire_wear": "Orta seviyede lastik aşınması.",
+      "weather_advantage": "Genellikle kuru ve ılık hava koşulları hakim.",
+      "trivia": "Sezonun kapanış yarışı olarak önemli bir konuma sahiptir."
+    }
+  }
+]

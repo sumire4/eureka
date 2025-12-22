@@ -1,0 +1,224 @@
+{
+  "drivers": [
+    {
+      "name": "Kimi Antonelli",
+      "team": "Mercedes",
+      "birthdate": "2004-11-02",
+      "country": "Finland",
+      "photoUrl": "assets/images/pilotlar/kimi_antonelli.jpg",
+      "bio": "Genç ve yetenekli pilot, hız ve soğukkanlılığıyla bilinir.",
+      "number": "27",
+      "pole_positions": 5,
+      "championships": 0
+    },
+    {
+      "name": "George Russell",
+      "team": "Mercedes",
+      "birthdate": "1998-02-15",
+      "country": "United Kingdom",
+      "photoUrl": "assets/images/pilotlar/george_russell.jpg",
+      "bio": "Teknik bilgisi ve yarış zekasıyla öne çıkan Britanyalı pilot.",
+      "number": "63",
+      "pole_positions": 6,
+      "championships": 0
+    },
+    {
+      "name": "Max Verstappen",
+      "team": "Red Bull",
+      "birthdate": "1997-09-30",
+      "country": "Netherlands",
+      "photoUrl": "assets/images/pilotlar/max_verstappen.jpg",
+      "bio": "Şampiyon pilot, agresif sürüş stili ve hızıyla tanınır.",
+      "number": "1",
+      "pole_positions": 40,
+      "championships": 2
+    },
+    {
+      "name": "Yuki Tsunoda",
+      "team": "Red Bull",
+      "birthdate": "2000-05-11",
+      "country": "Japan",
+      "photoUrl": "assets/images/pilotlar/yuki_tsunoda.jpg",
+      "bio": "Genç Japon pilot, hızlı adaptasyonuyla dikkat çekiyor.",
+      "number": "22",
+      "pole_positions": 1,
+      "championships": 0
+    },
+    {
+      "name": "Charles Leclerc",
+      "team": "Ferrari",
+      "birthdate": "1997-10-16",
+      "country": "Monaco",
+      "photoUrl": "assets/images/pilotlar/charles_leclerc.jpg",
+      "bio": "Yetenekli ve genç Ferrari pilotu, geleceğin şampiyonu olarak görülüyor.",
+      "number": "16",
+      "pole_positions": 12,
+      "championships": 0
+    },
+    {
+      "name": "Lewis Hamilton",
+      "team": "Ferrari",
+      "birthdate": "1985-01-07",
+      "country": "United Kingdom",
+      "photoUrl": "assets/images/pilotlar/lewis_hamilton.jpg",
+      "bio": "7 kez Dünya Şampiyonu, Formula 1 tarihinin efsane pilotlarından biri.",
+      "number": "44",
+      "pole_positions": 103,
+      "championships": 7
+    },
+    {
+      "name": "Lando Norris",
+      "team": "McLaren",
+      "birthdate": "1999-11-13",
+      "country": "United Kingdom",
+      "photoUrl": "assets/images/pilotlar/lando_norris.jpg",
+      "bio": "Genç ve popüler pilot, McLaren takımının gelecek vaat eden ismi.",
+      "number": "4",
+      "pole_positions": 2,
+      "championships": 0
+    },
+    {
+      "name": "Oscar Piastri",
+      "team": "McLaren",
+      "birthdate": "2001-04-06",
+      "country": "Australia",
+      "photoUrl": "assets/images/pilotlar/oscar_piastri.jpg",
+      "bio": "Genç Avustralyalı yetenek, hızlı adaptasyonuyla tanınıyor.",
+      "number": "81",
+      "pole_positions": 0,
+      "championships": 0
+    },
+    {
+      "name": "Alexander Albon",
+      "team": "Williams",
+      "birthdate": "1996-03-23",
+      "country": "Thailand",
+      "photoUrl": "assets/images/pilotlar/alexander_albon.jpg",
+      "bio": "Tayland kökenli İngiliz pilot, kararlılığıyla bilinir.",
+      "number": "23",
+      "pole_positions": 0,
+      "championships": 0
+    },
+    {
+      "name": "Carlos Sainz",
+      "team": "Williams",
+      "birthdate": "1994-09-01",
+      "country": "Spain",
+      "photoUrl": "assets/images/pilotlar/carlos_sainz.jpg",
+      "bio": "İspanyol sürücü, güçlü yarış stratejileriyle tanınıyor.",
+      "number": "55",
+      "pole_positions": 3,
+      "championships": 0
+    },
+    {
+      "name": "Esteban Ocon",
+      "team": "Haas",
+      "birthdate": "1996-09-17",
+      "country": "France",
+      "photoUrl": "assets/images/pilotlar/esteban_ocon.jpg",
+      "bio": "Fransız pilot, agresif ve teknik sürüşüyle dikkat çekiyor.",
+      "number": "31",
+      "pole_positions": 1,
+      "championships": 0
+    },
+    {
+      "name": "Oliver Bearman",
+      "team": "Haas",
+      "birthdate": "2005-08-29",
+      "country": "United Kingdom",
+      "photoUrl": "assets/images/pilotlar/oliver_bearman.jpg",
+      "bio": "Genç İngiliz yetenek, geleceğin yıldızlarından biri.",
+      "number": "47",
+      "pole_positions": 0,
+      "championships": 0
+    },
+    {
+      "name": "Fernando Alonso",
+      "team": "Aston Martin",
+      "birthdate": "1981-07-29",
+      "country": "Spain",
+      "photoUrl": "assets/images/pilotlar/fernando_alonso.jpg",
+      "bio": "2 kez Dünya Şampiyonu, deneyimli İspanyol pilot.",
+      "number": "14",
+      "pole_positions": 22,
+      "championships": 2
+    },
+    {
+      "name": "Lance Stroll",
+      "team": "Aston Martin",
+      "birthdate": "1998-10-29",
+      "country": "Canada",
+      "photoUrl": "assets/images/pilotlar/lance_stroll.jpg",
+      "bio": "Kanadalı pilot, hızlı ve agresif sürüşüyle bilinir.",
+      "number": "18",
+      "pole_positions": 1,
+      "championships": 0
+    },
+    {
+      "name": "Pierre Gasly",
+      "team": "Alpine",
+      "birthdate": "1996-02-07",
+      "country": "France",
+      "photoUrl": "assets/images/pilotlar/pierre_gasly.jpg",
+      "bio": "Fransız sürücü, agresif sürüşü ve yarış zekasıyla öne çıkar.",
+      "number": "10",
+      "pole_positions": 1,
+      "championships": 0
+    },
+    {
+      "name": "Franco Colapinto",
+      "team": "Alpine",
+      "birthdate": "1999-03-27",
+      "country": "Argentina",
+      "photoUrl": "assets/images/pilotlar/franco_colapinto.jpg",
+      "bio": "Arjantinli genç yetenek, hız ve kararlılığı ile dikkat çekiyor.",
+      "number": "25",
+      "pole_positions": 0,
+      "championships": 0
+    },
+    {
+      "name": "Nico Hülkenberg",
+      "team": "Kick Sauber",
+      "birthdate": "1987-08-19",
+      "country": "Germany",
+      "photoUrl": "assets/images/pilotlar/nico_hulkenberg.jpg",
+      "bio": "Deneyimli Alman pilot, teknik sürüşüyle bilinir.",
+      "number": "27",
+      "pole_positions": 1,
+      "championships": 0
+    },
+    {
+      "name": "Gabriel Bortoleto",
+      "team": "Kick Sauber",
+      "birthdate": "2004-06-25",
+      "country": "Brazil",
+      "photoUrl": "assets/images/pilotlar/gabriel_bortoleto.jpg",
+      "bio": "Genç Brezilyalı sürücü, geleceğin umut vaat eden pilotlarından.",
+      "number": "88",
+      "pole_positions": 0,
+      "championships": 0
+    },
+    {
+      "name": "Liam Lawson",
+      "team": "Racing Bulls",
+      "birthdate": "2002-02-11",
+      "country": "New Zealand",
+      "photoUrl": "assets/images/pilotlar/liam_lawson.jpg",
+      "bio": "Yeni Zelanda'lı hızlı pilot, agresif yarış stili ile bilinir.",
+      "number": "4",
+      "pole_positions": 0,
+      "championships": 0
+    },
+    {
+      "name": "Isack Hadjar",
+      "team": "Racing Bulls",
+      "birthdate": "2004-10-12",
+      "country": "France",
+      "photoUrl": "assets/images/pilotlar/isack_hadjar.jpg",
+      "bio": "Genç Fransız sürücü, yetenekleriyle dikkat çekiyor.",
+      "number": "99",
+      "pole_positions": 0,
+      "championships": 0
+    }
+  ]
+}
