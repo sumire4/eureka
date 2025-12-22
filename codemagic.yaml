@@ -18,12 +18,16 @@ workflows:
         script: |
           touch .env
           
-      - name: Disable Xcode Code Signing (Bypass Team ID)
+      scripts:
+      - name: Create dummy .env if missing
         script: |
-          # Proje dosyasındaki kod imzalama zorunluluğunu script ile siliyoruz
+          touch .env
+          
+      - name: Disable Xcode Code Signing (Project File Fix)
+        script: |
+          # Proje dosyasındaki imzalama gerekliliklerini zorla devre dışı bırakıyoruz
           sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' ios/Runner.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' ios/Runner.xcodeproj/project.pbxproj
-          # Team ID gereksinimini temizle
           sed -i '' '/DEVELOPMENT_TEAM/d' ios/Runner.xcodeproj/project.pbxproj
       
       - name: Get Flutter packages
@@ -34,11 +38,14 @@ workflows:
         script: |
           flutter analyze || true
       
-      - name: Build iOS (Debug)
+      - name: Build iOS (Debug - No Code Signing)
         script: |
-          # Hem flutter bazında hem de xcode bazında imzalamayı kapatıyoruz
-          flutter build ios --debug --no-codesign \
-            --xcargs "CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY='' DEVELOPMENT_TEAM=''"
+          # Parametreleri ortam değişkeni olarak veriyoruz, böylece '--xcargs' hatası almazsın
+          export CODE_SIGNING_ALLOWED=NO
+          export CODE_SIGNING_REQUIRED=NO
+          export CODE_SIGN_IDENTITY=""
+          
+          flutter build ios --debug --no-codesign --build-name=1.0.0 --build-number=1
       
       - name: Create IPA (manual signing)
         script: |
