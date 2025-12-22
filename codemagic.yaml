@@ -1,0 +1,113 @@
+workflows:
+  ios-workflow:
+    name: iOS Debug Build (No Code Signing)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: 15.0
+      cocoapods: default
+      groups:
+        # OpenAI API key'inizi buraya ekleyin (Codemagic environment variables'dan)
+        - app_secrets
+      vars:
+        # Bundle ID'nizi değiştirin
+        BUNDLE_ID: "com.yournamee.eureka"
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+    
+    scripts:
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      
+      - name: Flutter analyze
+        script: |
+          flutter analyze
+      
+      - name: Build iOS (Debug - No Code Signing)
+        script: |
+          flutter build ios --debug --no-codesign
+      
+      - name: Create IPA (manual signing)
+        script: |
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload/
+          zip -r app-debug.ipa Payload
+          mv app-debug.ipa $CM_BUILD_DIR/
+    
+    artifacts:
+      - app-debug.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
+        notify:
+          success: true
+          failure: true
+
+  # Alternatif: Release build (Apple Developer Account gerektirir)
+  ios-release-workflow:
+    name: iOS Release Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: 15.0
+      cocoapods: default
+      groups:
+        - app_secrets
+      vars:
+        BUNDLE_ID: "com.yourname.eureka"
+        APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # Codemagic'te şifreli olarak saklayın
+        APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...)
+        APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...)
+        CERTIFICATE_PRIVATE_KEY: Encrypted(...)
+    
+    scripts:
+      - name: Set up keychain
+        script: |
+          keychain initialize
+      
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files $BUNDLE_ID \
+            --type IOS_APP_STORE \
+            --create
+      
+      - name: Use certificate and profile
+        script: |
+          keychain add-certificates
+          xcode-project use-profiles
+      
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      
+      - name: Build iOS Release
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=$HOME/export_options.plist
+    
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+      
+      email:
+        recipients:
+          - your-email@example.com
+        notify:
+          success: true
+          failure: true
