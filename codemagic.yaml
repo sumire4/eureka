@@ -1,4 +1,5 @@
 workflows:
+  # Workflow 1: iOS Debug Build (No Apple Developer Account needed)
   ios-workflow:
     name: iOS Debug Build (No Code Signing)
     max_build_duration: 60
@@ -8,10 +9,8 @@ workflows:
       xcode: 15.0
       cocoapods: default
       groups:
-        # OpenAI API key'inizi buraya ekleyin (Codemagic environment variables'dan)
         - app_secrets
       vars:
-        # Bundle ID'nizi değiştirin
         BUNDLE_ID: "com.yourname.eureka"
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
@@ -53,16 +52,14 @@ workflows:
           success: true
           failure: true
 
-  # Release build için Apple Developer hesabınız varsa bu workflow'u kullanın
-  # Önce Codemagic'te App Store Connect entegrasyonunu yapılandırmalısınız
+  # Workflow 2: iOS Release Build (Requires App Store Connect Integration)
   ios-release-workflow:
     name: iOS Release Build (Requires Apple Developer Account)
     max_build_duration: 60
     instance_type: mac_mini_m2
     
-    # App Store Connect entegrasyonu
     integrations:
-      app_store_connect: codemagic  # Codemagic'te ayarladığınız entegrasyon adı
+      app_store_connect: codemagic 
     
     environment:
       flutter: stable
@@ -109,9 +106,9 @@ workflows:
     
     publishing:
       app_store_connect:
-        # Codemagic'te yapılandırdığınız App Store Connect API entegrasyonunu kullanır
+        # This fix addresses the "Authentication information is missing" error
+        auth: integration
         submit_to_testflight: true
-        # submit_to_app_store: true  # App Store'a direkt göndermek için
       
       email:
         recipients:
