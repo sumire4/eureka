@@ -1,5 +1,4 @@
 workflows:
-  # Workflow 1: iOS Debug Build (Kod İmzalama Gerektirmez)
   ios-workflow:
     name: iOS Debug Build (No Code Signing)
     max_build_duration: 60
@@ -12,20 +11,16 @@ workflows:
         - app_secrets
       vars:
         BUNDLE_ID: "com.yourname.eureka"
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
     
     scripts:
       - name: Create dummy .env if missing
         script: |
           touch .env
           
-      scripts:
-      - name: Create dummy .env if missing
+      - name: Disable Xcode Code Signing
         script: |
-          touch .env
-          
-      - name: Disable Xcode Code Signing (Project File Fix)
-        script: |
-          # Proje dosyasındaki imzalama gerekliliklerini zorla devre dışı bırakıyoruz
           sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' ios/Runner.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' ios/Runner.xcodeproj/project.pbxproj
           sed -i '' '/DEVELOPMENT_TEAM/d' ios/Runner.xcodeproj/project.pbxproj
@@ -38,13 +33,11 @@ workflows:
         script: |
           flutter analyze || true
       
-      - name: Build iOS (Debug - No Code Signing)
+      - name: Build iOS (Debug)
         script: |
-          # Parametreleri ortam değişkeni olarak veriyoruz, böylece '--xcargs' hatası almazsın
           export CODE_SIGNING_ALLOWED=NO
           export CODE_SIGNING_REQUIRED=NO
           export CODE_SIGN_IDENTITY=""
-          
           flutter build ios --debug --no-codesign --build-name=1.0.0 --build-number=1
       
       - name: Create IPA (manual signing)
@@ -57,6 +50,7 @@ workflows:
     
     artifacts:
       - app-debug.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
     
     publishing:
       email:
@@ -66,7 +60,6 @@ workflows:
           success: true
           failure: true
 
-  # Workflow 2: iOS Release Build (Apple Hesabı ile Otomatik İmzalama)
   ios-release-workflow:
     name: iOS Release Build (Auto Signing)
     max_build_duration: 60
@@ -81,6 +74,8 @@ workflows:
         - app_secrets
       vars:
         BUNDLE_ID: "com.yourname.eureka"
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.yourname.eureka
@@ -90,7 +85,6 @@ workflows:
           keychain initialize
       - name: Fetch signing files
         script: |
-          # Bu komut Apple'dan sertifikaları otomatik çeker ve uyarıyı engeller
           app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
       - name: Use certificate and profile
         script: |
@@ -111,6 +105,3 @@ workflows:
       email:
         recipients:
           - your-email@example.com
-        notify:
-          success: true
-          failure: true
