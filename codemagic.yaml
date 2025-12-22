@@ -6,7 +6,7 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       flutter: stable
-      xcode: 15.0
+      xcode: latest
       cocoapods: default
       groups:
         - app_secrets
