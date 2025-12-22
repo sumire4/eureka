@@ -30,7 +30,16 @@ workflows:
       
       - name: Build iOS (Debug - No Code Signing)
         script: |
-          flutter build ios --debug --no-codesign
+          flutter build ios --debug --no-codesign \
+            --build-name=1.0.0 \
+            --build-number=1 \
+            --extra-gen-snapshot-options="--no-clean" \
+            --extra-front-end-options="--no-clean" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            CODE_SIGNING_METHOD=manual
       
       - name: Create IPA (manual signing)
         script: |
