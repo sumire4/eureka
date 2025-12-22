@@ -1,5 +1,5 @@
 workflows:
-  # Workflow 1: iOS Debug Build (No Apple Developer Account needed)
+  # Workflow 1: iOS Debug Build (Kod İmzalama Gerektirmez)
   ios-workflow:
     name: iOS Debug Build (No Code Signing)
     max_build_duration: 60
@@ -12,13 +12,19 @@ workflows:
         - app_secrets
       vars:
         BUNDLE_ID: "com.yourname.eureka"
-        XCODE_WORKSPACE: "Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"
     
     scripts:
-      - name: Set up code signing settings on Xcode project
+      - name: Create dummy .env if missing
         script: |
-          xcode-project use-profiles
+          touch .env
+          
+      - name: Disable Xcode Code Signing (Bypass Team ID)
+        script: |
+          # Proje dosyasındaki kod imzalama zorunluluğunu script ile siliyoruz
+          sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' ios/Runner.xcodeproj/project.pbxproj
+          # Team ID gereksinimini temizle
+          sed -i '' '/DEVELOPMENT_TEAM/d' ios/Runner.xcodeproj/project.pbxproj
       
       - name: Get Flutter packages
         script: |
@@ -26,20 +32,13 @@ workflows:
       
       - name: Flutter analyze
         script: |
-          flutter analyze || true  # Adding '|| true' prevents the build from failing here
+          flutter analyze || true
       
-      - name: Build iOS (Debug - No Code Signing)
+      - name: Build iOS (Debug)
         script: |
+          # Hem flutter bazında hem de xcode bazında imzalamayı kapatıyoruz
           flutter build ios --debug --no-codesign \
-            --build-name=1.0.0 \
-            --build-number=1 \
-            --extra-gen-snapshot-options="--no-clean" \
-            --extra-front-end-options="--no-clean" \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGN_ENTITLEMENTS="" \
-            CODE_SIGNING_METHOD=manual
+            --xcargs "CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY='' DEVELOPMENT_TEAM=''"
       
       - name: Create IPA (manual signing)
         script: |
@@ -51,7 +50,6 @@ workflows:
     
     artifacts:
       - app-debug.ipa
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
     
     publishing:
       email:
@@ -61,15 +59,13 @@ workflows:
           success: true
           failure: true
 
-  # Workflow 2: iOS Release Build (Requires App Store Connect Integration)
+  # Workflow 2: iOS Release Build (Apple Hesabı ile Otomatik İmzalama)
   ios-release-workflow:
-    name: iOS Release Build (Requires Apple Developer Account)
+    name: iOS Release Build (Auto Signing)
     max_build_duration: 60
     instance_type: mac_mini_m2
-    
     integrations:
       app_store_connect: codemagic 
-    
     environment:
       flutter: stable
       xcode: 15.0
@@ -78,47 +74,33 @@ workflows:
         - app_secrets
       vars:
         BUNDLE_ID: "com.yourname.eureka"
-        XCODE_WORKSPACE: "Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.yourname.eureka
-    
     scripts:
       - name: Set up keychain
         script: |
           keychain initialize
-      
       - name: Fetch signing files
         script: |
-          app-store-connect fetch-signing-files $BUNDLE_ID \
-            --type IOS_APP_STORE \
-            --create
-      
+          # Bu komut Apple'dan sertifikaları otomatik çeker ve uyarıyı engeller
+          app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
       - name: Use certificate and profile
         script: |
           keychain add-certificates
           xcode-project use-profiles
-      
       - name: Get Flutter packages
         script: |
           flutter pub get
-      
       - name: Build iOS Release
         script: |
-          flutter build ipa --release \
-            --export-options-plist=$HOME/export_options.plist
-    
+          flutter build ipa --release --export-options-plist=$HOME/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-    
     publishing:
       app_store_connect:
-        # This fix addresses the "Authentication information is missing" error
         auth: integration
         submit_to_testflight: true
-      
       email:
         recipients:
           - your-email@example.com
