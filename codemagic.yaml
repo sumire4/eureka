@@ -12,7 +12,7 @@ workflows:
         - app_secrets
       vars:
         # Bundle ID'nizi değiştirin
-        BUNDLE_ID: "com.yournamee.eureka"
+        BUNDLE_ID: "com.yourname.eureka"
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
     
@@ -53,11 +53,17 @@ workflows:
           success: true
           failure: true
 
-  # Alternatif: Release build (Apple Developer Account gerektirir)
+  # Release build için Apple Developer hesabınız varsa bu workflow'u kullanın
+  # Önce Codemagic'te App Store Connect entegrasyonunu yapılandırmalısınız
   ios-release-workflow:
-    name: iOS Release Build
+    name: iOS Release Build (Requires Apple Developer Account)
     max_build_duration: 60
     instance_type: mac_mini_m2
+    
+    # App Store Connect entegrasyonu
+    integrations:
+      app_store_connect: codemagic  # Codemagic'te ayarladığınız entegrasyon adı
+    
     environment:
       flutter: stable
       xcode: 15.0
@@ -66,10 +72,11 @@ workflows:
         - app_secrets
       vars:
         BUNDLE_ID: "com.yourname.eureka"
-        APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # Codemagic'te şifreli olarak saklayın
-        APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...)
-        APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...)
-        CERTIFICATE_PRIVATE_KEY: Encrypted(...)
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.yourname.eureka
     
     scripts:
       - name: Set up keychain
@@ -102,8 +109,9 @@ workflows:
     
     publishing:
       app_store_connect:
-        auth: integration
+        # Codemagic'te yapılandırdığınız App Store Connect API entegrasyonunu kullanır
         submit_to_testflight: true
+        # submit_to_app_store: true  # App Store'a direkt göndermek için
       
       email:
         recipients:
