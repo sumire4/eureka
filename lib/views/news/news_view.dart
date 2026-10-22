@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
+//import 'package:url_launcher/url_launcher.dart';
 import '../../models/news_model.dart';
 import '../../services/rss_service.dart';
 import 'news_detail_view.dart';
@@ -56,9 +56,11 @@ class _NewsViewState extends State<NewsView> {
 
   void _shareNews(NewsItem item) {
     HapticFeedback.selectionClick();
-    Share.share(
-      '${item.title}\n\nDetaylar: ${item.link}',
-      subject: item.title,
+    SharePlus.instance.share(
+      ShareParams(
+        text: '${item.title}\n\nDetaylar: ${item.link}',
+        subject: item.title,
+      ),
     );
   }
 
@@ -77,7 +79,7 @@ class _NewsViewState extends State<NewsView> {
               borderRadius: BorderRadius.circular(22),
               boxShadow: [
                 BoxShadow(
-                  color: CupertinoColors.black.withOpacity(0.18),
+                  color: CupertinoColors.black.withValues(alpha: 0.18),
                   blurRadius: 25,
                   offset: const Offset(0, 10),
                 ),
@@ -118,8 +120,7 @@ class _NewsViewState extends State<NewsView> {
                     const Spacer(),
                     CupertinoButton(
                       padding: EdgeInsets.zero,
-                      minSize: 24,
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () => Navigator.of(context).pop(), minimumSize: Size(24, 24),
                       child: const Icon(
                         CupertinoIcons.clear_circled_solid,
                         color: CupertinoColors.systemGrey3,
@@ -293,7 +294,7 @@ class _NewsViewState extends State<NewsView> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: CupertinoColors.systemGrey.withOpacity(0.12),
+                        color: CupertinoColors.systemGrey.withValues(alpha: 0.12),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -311,7 +312,7 @@ class _NewsViewState extends State<NewsView> {
                             height: 190,
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _fallbackImage(),
+                            errorBuilder: (_, _, _) => _fallbackImage(),
                           ),
                         )
                       else
@@ -324,7 +325,7 @@ class _NewsViewState extends State<NewsView> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE10600).withOpacity(0.1),
+                              color: const Color(0xFFE10600).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -357,8 +358,7 @@ class _NewsViewState extends State<NewsView> {
                           // Paylaş Butonu
                           CupertinoButton(
                             padding: const EdgeInsets.all(6),
-                            minSize: 32,
-                            onPressed: () => _shareNews(item),
+                            onPressed: () => _shareNews(item), minimumSize: Size(32, 32),
                             child: const Icon(
                               CupertinoIcons.share,
                               size: 20,
@@ -369,8 +369,7 @@ class _NewsViewState extends State<NewsView> {
                           // Kaydet Butonu
                           CupertinoButton(
                             padding: const EdgeInsets.all(6),
-                            minSize: 32,
-                            onPressed: () => _toggleBookmark(item.link),
+                            onPressed: () => _toggleBookmark(item.link), minimumSize: Size(32, 32),
                             child: Icon(
                               isSaved ? CupertinoIcons.bookmark_fill : CupertinoIcons.bookmark,
                               size: 20,
@@ -452,7 +451,7 @@ class _NewsViewState extends State<NewsView> {
                     width: 44,
                     height: 44,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _defaultIcon(),
+                    errorBuilder: (_, _, _) => _defaultIcon(),
                   ),
                 )
                     : _defaultIcon(),
@@ -476,8 +475,7 @@ class _NewsViewState extends State<NewsView> {
                     // Paylaş
                     CupertinoButton(
                       padding: EdgeInsets.zero,
-                      minSize: 30,
-                      onPressed: () => _shareNews(news),
+                      onPressed: () => _shareNews(news), minimumSize: Size(30, 30),
                       child: const Icon(
                         CupertinoIcons.share,
                         size: 18,
@@ -488,8 +486,7 @@ class _NewsViewState extends State<NewsView> {
                     // Kaydet
                     CupertinoButton(
                       padding: EdgeInsets.zero,
-                      minSize: 30,
-                      onPressed: () => _toggleBookmark(news.link),
+                      onPressed: () => _toggleBookmark(news.link), minimumSize: Size(30, 30),
                       child: Icon(
                         isSaved ? CupertinoIcons.bookmark_fill : CupertinoIcons.bookmark,
                         size: 18,

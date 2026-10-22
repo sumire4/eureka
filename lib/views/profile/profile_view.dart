@@ -71,7 +71,7 @@ class ProfileView extends StatelessWidget {
                   trailing: CupertinoSwitch(
                     value: true,
                     onChanged: (val) {},
-                    activeColor: const Color(0xFFE10600),
+                    activeTrackColor: const Color(0xFFE10600),
                   ),
                 ),
                 CupertinoListTile(

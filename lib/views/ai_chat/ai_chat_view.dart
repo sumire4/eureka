@@ -62,7 +62,7 @@ class _AiChatViewState extends State<AiChatView> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: CupertinoColors.systemGrey.withOpacity(0.08),
+                            color: CupertinoColors.systemGrey.withValues(alpha: 0.08),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
