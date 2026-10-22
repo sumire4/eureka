@@ -171,7 +171,7 @@ class ConstructorDetailView extends StatelessWidget {
                   color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: teamColor.withOpacity(0.4),
+                    color: teamColor.withValues(alpha: 0.4),
                     width: 1.2,
                   ),
                 ),
@@ -188,7 +188,7 @@ class ConstructorDetailView extends StatelessWidget {
                       child: Image.network(
                         teamLogoUrl,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Icon(
+                        errorBuilder: (_, _, _) => Icon(
                           CupertinoIcons.flag_fill,
                           color: teamColor,
                           size: 28,
@@ -288,7 +288,7 @@ class ConstructorDetailView extends StatelessWidget {
                     color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: teamColor.withOpacity(0.35),
+                      color: teamColor.withValues(alpha: 0.35),
                       width: 1.2,
                     ),
                   ),
@@ -351,7 +351,7 @@ class ConstructorDetailView extends StatelessWidget {
                           carImageUrl,
                           height: 95,
                           fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => const Icon(
+                          errorBuilder: (_, _, _) => const Icon(
                             CupertinoIcons.car_detailed,
                             size: 48,
                             color: CupertinoColors.systemGrey3,

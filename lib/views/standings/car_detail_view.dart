@@ -156,7 +156,7 @@ class _CarDetailViewState extends State<CarDetailView> {
                   color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: widget.teamColor.withOpacity(0.35),
+                    color: widget.teamColor.withValues(alpha: 0.35),
                     width: 1.5,
                   ),
                 ),
@@ -196,9 +196,9 @@ class _CarDetailViewState extends State<CarDetailView> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
                           decoration: BoxDecoration(
-                            color: widget.teamColor.withOpacity(0.12),
+                            color: widget.teamColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: widget.teamColor.withOpacity(0.4)),
+                            border: Border.all(color: widget.teamColor.withValues(alpha: 0.4)),
                           ),
                           child: Text(
                             'FIA 2026',
@@ -218,7 +218,7 @@ class _CarDetailViewState extends State<CarDetailView> {
                       widget.carImageUrl,
                       height: 110,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const Icon(
+                      errorBuilder: (_, _, _) => const Icon(
                         CupertinoIcons.car_detailed,
                         size: 60,
                         color: CupertinoColors.systemGrey3,

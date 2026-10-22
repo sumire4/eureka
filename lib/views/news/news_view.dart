@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
-//import 'package:url_launcher/url_launcher.dart';
 import '../../models/news_model.dart';
+import '../../services/gemini_service.dart';
 import '../../services/rss_service.dart';
 import 'news_detail_view.dart';
 
@@ -15,9 +15,9 @@ class NewsView extends StatefulWidget {
 
 class _NewsViewState extends State<NewsView> {
   final RssService _rssService = RssService();
+  final GeminiService _geminiService = GeminiService();
   late Future<List<NewsItem>> _newsFuture;
 
-  // Kaydedilen haberlerin linklerini tutan set
   final Set<String> _bookmarkedLinks = {};
 
   @override
@@ -64,9 +64,14 @@ class _NewsViewState extends State<NewsView> {
     );
   }
 
-  // Gemini Basılı Tutma Popup Menüsü
+  // Canlı Gemini AI Özet Modalı
   void _showAiSummaryModal(NewsItem item) {
-    HapticFeedback.heavyImpact(); // Basılı tutulduğunda iOS haptic titreşimi
+    HapticFeedback.heavyImpact();
+    final summaryFuture = _geminiService.summarizeNews(
+      title: item.title,
+      description: item.description,
+    );
+
     showCupertinoModalPopup(
       context: context,
       builder: (context) => Center(
@@ -95,22 +100,17 @@ class _NewsViewState extends State<NewsView> {
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)], // Gemini moru/mavisi
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(
                         CupertinoIcons.sparkles,
-                        color: CupertinoColors.white,
+                        color: CupertinoColors.inactiveGray,
                         size: 16,
                       ),
                     ),
                     const SizedBox(width: 10),
                     const Text(
-                      'Eureka AI Özeti',
+                      'Haber Özeti',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -120,7 +120,8 @@ class _NewsViewState extends State<NewsView> {
                     const Spacer(),
                     CupertinoButton(
                       padding: EdgeInsets.zero,
-                      onPressed: () => Navigator.of(context).pop(), minimumSize: Size(24, 24),
+                      onPressed: () => Navigator.of(context).pop(),
+                      minimumSize: const Size(24, 24),
                       child: const Icon(
                         CupertinoIcons.clear_circled_solid,
                         color: CupertinoColors.systemGrey3,
@@ -129,9 +130,9 @@ class _NewsViewState extends State<NewsView> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
 
-                // Haber Başlığı Küçük
+                // Haber Başlığı
                 Text(
                   item.title,
                   maxLines: 2,
@@ -144,36 +145,56 @@ class _NewsViewState extends State<NewsView> {
                 ),
                 const SizedBox(height: 12),
 
-                // AI Özeti Kutusu (3 Maddede hap bilgi)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: CupertinoColors.systemGrey6.resolveFrom(context),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSummaryBullet(
-                        'Öne Çıkan:',
-                        item.description.isNotEmpty
-                            ? (item.description.length > 90
-                            ? '${item.description.substring(0, 90)}...'
-                            : item.description)
-                            : 'Gelişmeler teknik ekip tarafından doğrulandı.',
+                // Canlı Gemini Özeti Alanı
+                FutureBuilder<AiSummaryResult>(
+                  future: summaryFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                        height: 110,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: CupertinoColors.systemGrey6.resolveFrom(context),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            CupertinoActivityIndicator(radius: 11),
+                            SizedBox(height: 8),
+                            Text(
+                              'Gemini haberi analiz ediyor...',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: CupertinoColors.secondaryLabel,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    final summary = snapshot.data ?? AiSummaryResult.fallback(item.description);
+
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: CupertinoColors.systemGrey6.resolveFrom(context),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const SizedBox(height: 8),
-                      _buildSummaryBullet(
-                        'Puan/Yarış Etkisi:',
-                        'Hafta sonundaki yarış stratejilerini doğrudan değiştirebilir.',
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSummaryBullet('Öne Çıkan:', summary.highlight),
+                          const SizedBox(height: 8),
+                          _buildSummaryBullet('Puan/Yarış Etkisi:', summary.impact),
+                          const SizedBox(height: 8),
+                          _buildSummaryBullet('Son Durum:', summary.status),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      _buildSummaryBullet(
-                        'Son Durum:',
-                        'Mühendisler ve pilotlar arasındaki toplantılar devam ediyor.',
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 16),
 
@@ -247,10 +268,10 @@ class _NewsViewState extends State<NewsView> {
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
-                      child: Text(
+                      child: const Text(
                         'Haberler yüklenemedi.\nLütfen internet bağlantınızı kontrol edin.',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: CupertinoColors.destructiveRed),
+                        style: TextStyle(color: CupertinoColors.destructiveRed),
                       ),
                     ),
                   ),
@@ -275,7 +296,7 @@ class _NewsViewState extends State<NewsView> {
 
     final List<Widget> slivers = [];
 
-    // 1. BÖLÜM: İlk 20 Büyük Manşet Kartı
+    // 1. Manşet Kartları
     slivers.add(
       SliverList(
         delegate: SliverChildBuilderDelegate(
@@ -303,7 +324,6 @@ class _NewsViewState extends State<NewsView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Görsel
                       if (item.imageUrl != null)
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
@@ -318,8 +338,6 @@ class _NewsViewState extends State<NewsView> {
                       else
                         _fallbackImage(),
                       const SizedBox(height: 12),
-
-                      // Üst Etiket & Aksiyon Butonları (Gemini AI, Paylaş, Kaydet)
                       Row(
                         children: [
                           Container(
@@ -339,37 +357,32 @@ class _NewsViewState extends State<NewsView> {
                             ),
                           ),
                           const Spacer(),
-
-                          // Gemini AI İkonu (Tıklanınca ipucu, Basılı tutunca Özet)
                           GestureDetector(
-                            onLongPress: () => _showAiSummaryModal(item),
-                            onTap: () => _showAiSummaryModal(item), // Kullanım kolaylığı için tek tıkta da açılır
+                            onTap: () => _showAiSummaryModal(item),
                             child: Container(
                               padding: const EdgeInsets.all(6),
                               margin: const EdgeInsets.only(right: 2),
                               child: const Icon(
                                 CupertinoIcons.sparkles,
                                 size: 20,
-                                color: Color(0xFF8E2DE2), // Gemini Gradient rengi
+                                color: Color(0xFF8E2DE2),
                               ),
                             ),
                           ),
-
-                          // Paylaş Butonu
                           CupertinoButton(
                             padding: const EdgeInsets.all(6),
-                            onPressed: () => _shareNews(item), minimumSize: Size(32, 32),
+                            onPressed: () => _shareNews(item),
+                            minimumSize: const Size(32, 32),
                             child: const Icon(
                               CupertinoIcons.share,
                               size: 20,
                               color: CupertinoColors.secondaryLabel,
                             ),
                           ),
-
-                          // Kaydet Butonu
                           CupertinoButton(
                             padding: const EdgeInsets.all(6),
-                            onPressed: () => _toggleBookmark(item.link), minimumSize: Size(32, 32),
+                            onPressed: () => _toggleBookmark(item.link),
+                            minimumSize: const Size(32, 32),
                             child: Icon(
                               isSaved ? CupertinoIcons.bookmark_fill : CupertinoIcons.bookmark,
                               size: 20,
@@ -379,8 +392,6 @@ class _NewsViewState extends State<NewsView> {
                         ],
                       ),
                       const SizedBox(height: 6),
-
-                      // Başlık
                       Text(
                         item.title,
                         style: const TextStyle(
@@ -404,7 +415,7 @@ class _NewsViewState extends State<NewsView> {
                       ],
                       const SizedBox(height: 10),
                       Text(
-                        '${item.pubDate} • Motorsport TR',
+                        item.pubDate,
                         style: const TextStyle(
                           fontSize: 11,
                           color: CupertinoColors.tertiaryLabel,
@@ -421,7 +432,7 @@ class _NewsViewState extends State<NewsView> {
       ),
     );
 
-    // 2. BÖLÜM: Kalan Kompakt Liste
+    // 2. Kalan Liste
     if (remainingItems.isNotEmpty) {
       slivers.add(
         SliverToBoxAdapter(
@@ -439,7 +450,7 @@ class _NewsViewState extends State<NewsView> {
                   style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
                 subtitle: Text(
-                  '${news.pubDate} • Motorsport TR',
+                  news.pubDate,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -458,9 +469,7 @@ class _NewsViewState extends State<NewsView> {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Gemini AI Butonu
                     GestureDetector(
-                      onLongPress: () => _showAiSummaryModal(news),
                       onTap: () => _showAiSummaryModal(news),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 4.0),
@@ -472,10 +481,10 @@ class _NewsViewState extends State<NewsView> {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    // Paylaş
                     CupertinoButton(
                       padding: EdgeInsets.zero,
-                      onPressed: () => _shareNews(news), minimumSize: Size(30, 30),
+                      onPressed: () => _shareNews(news),
+                      minimumSize: const Size(30, 30),
                       child: const Icon(
                         CupertinoIcons.share,
                         size: 18,
@@ -483,10 +492,10 @@ class _NewsViewState extends State<NewsView> {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    // Kaydet
                     CupertinoButton(
                       padding: EdgeInsets.zero,
-                      onPressed: () => _toggleBookmark(news.link), minimumSize: Size(30, 30),
+                      onPressed: () => _toggleBookmark(news.link),
+                      minimumSize: const Size(30, 30),
                       child: Icon(
                         isSaved ? CupertinoIcons.bookmark_fill : CupertinoIcons.bookmark,
                         size: 18,

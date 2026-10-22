@@ -3,11 +3,14 @@ import 'package:flutter/rendering.dart';
 import 'core/theme/ios_theme.dart';
 import 'views/news/news_view.dart';
 import 'views/standings/standings_view.dart';
-import 'views/ai_chat/ai_chat_view.dart';
+import 'views/ai/eureka_ai_view.dart';
 import 'views/profile/profile_view.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  // .env dosyasını belleğe yükle
+  await dotenv.load(fileName: ".env");
   runApp(const EurekaApp());
 }
 
@@ -42,7 +45,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
     final views = [
       const NewsView(),
       StandingsView(isTabBarVisible: _isTabBarVisible),
-      const AiChatView(),
+      const EurekaAiView(),
       const ProfileView(),
     ];
 
@@ -96,7 +99,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(CupertinoIcons.sparkles),
-                    label: 'Eureka AI',
+                    label: 'Eureka YZ',
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(CupertinoIcons.person_circle),

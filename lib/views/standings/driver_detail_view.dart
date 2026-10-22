@@ -219,7 +219,7 @@ class _DriverDetailViewState extends State<DriverDetailView> {
                               ? Image.network(
                             photoUrl,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(
+                            errorBuilder: (_, _, _) => const Icon(
                               CupertinoIcons.person_fill,
                               size: 48,
                               color: CupertinoColors.systemGrey3,
@@ -238,7 +238,7 @@ class _DriverDetailViewState extends State<DriverDetailView> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
-                                color: CupertinoColors.black.withOpacity(0.2),
+                                color: CupertinoColors.black.withValues(alpha: 0.2),
                                 blurRadius: 3,
                                 offset: const Offset(0, 1),
                               )
@@ -320,7 +320,7 @@ class _DriverDetailViewState extends State<DriverDetailView> {
                                     width: 22,
                                     height: 15,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => const Icon(
+                                    errorBuilder: (_, _, _) => const Icon(
                                       CupertinoIcons.flag_fill,
                                       size: 14,
                                       color: CupertinoColors.systemGrey,
@@ -409,7 +409,7 @@ class _DriverDetailViewState extends State<DriverDetailView> {
                     color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: teamColor.withOpacity(0.35),
+                      color: teamColor.withValues(alpha: 0.35),
                       width: 1.2,
                     ),
                   ),
@@ -468,7 +468,7 @@ class _DriverDetailViewState extends State<DriverDetailView> {
                           carImageUrl,
                           height: 95,
                           fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => Container(
+                          errorBuilder: (_, _, _) => Container(
                             height: 95,
                             alignment: Alignment.center,
                             child: const Icon(

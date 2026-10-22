@@ -68,7 +68,7 @@ class _StandingsViewState extends State<StandingsView> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
-                color: CupertinoColors.systemBackground.resolveFrom(context).withOpacity(0.95),
+                color: CupertinoColors.systemBackground.resolveFrom(context).withValues(alpha: 0.95),
                 border: const Border(
                   top: BorderSide(
                     color: CupertinoColors.systemGrey5,
@@ -246,7 +246,7 @@ class _StandingsViewState extends State<StandingsView> {
                   child: CupertinoActivityIndicator(radius: 8),
                 );
               },
-              errorBuilder: (_, __, ___) => const Icon(
+              errorBuilder: (_, _, _) => const Icon(
                 CupertinoIcons.person_fill,
                 size: 18,
                 color: CupertinoColors.systemGrey3,
@@ -384,7 +384,7 @@ class _StandingsViewState extends State<StandingsView> {
             child: Image.network(
               logoUrl,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => Icon(
+              errorBuilder: (_, _, _) => Icon(
                 CupertinoIcons.flag_fill,
                 size: 14,
                 color: teamColor,
