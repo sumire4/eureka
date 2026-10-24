@@ -19,7 +19,6 @@ jobs:
           channel: 'stable'
           cache: true
 
-      # .env dosyasını kontrol et, yoksa derlemenin çökmemesi için sahte bir tane oluştur
       - name: Ensure .env exists
         run: |
           if [ ! -f .env ]; then
@@ -29,17 +28,13 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      # Pod bağımlılıklarını kur
-      - name: Install Pods
-        run: |
-          cd ios
-          pod install
-          cd ..
+      # Podfile'ı ve iOS yapılandırmasını Flutter'a otomatik ürettiriyoruz
+      - name: Prepare iOS Config & Pods
+        run: flutter build ios --config-only --no-codesign
 
-      # Xcode'un imzalama zorunluluğunu bypass ederek derle
+      # Xcode derlemesini kod imzalama kontrollerini atlayarak çalıştır
       - name: Build iOS Application (Force No Codesign)
         run: |
-          flutter build ios --release --no-codesign --config-only
           cd ios
           xcodebuild build \
             -workspace Runner.xcworkspace \
@@ -54,16 +49,15 @@ jobs:
             PROVISIONING_PROFILE_SPECIFIER=""
           cd ..
 
-      # Payload klasörü oluşturup Runner.app'i .ipa olarak paketle
+      # Runner.app dosyasını bulup Payload içine koyarak .ipa oluştur
       - name: Package into IPA
         run: |
           mkdir -p Payload
-          # Üretilen app dosyasını bul ve kopyala
           APP_PATH=$(find build/ios -name "Runner.app" -type d | head -n 1)
           if [ -z "$APP_PATH" ]; then
             APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Runner.app" -type d | head -n 1)
           fi
-          echo "Found app at: $APP_PATH"
+          echo "Bulunan uygulama konumu: $APP_PATH"
           cp -r "$APP_PATH" Payload/
           zip -r Eureka-Unsigned.ipa Payload
 
