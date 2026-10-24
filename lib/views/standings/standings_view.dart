@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import '../../services/standings_service.dart';
 import 'driver_detail_view.dart';
@@ -34,68 +35,129 @@ class _StandingsViewState extends State<StandingsView> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).padding.bottom;
-    final tabBarHeight = 50.0 + bottomInset;
-
     return CupertinoPageScaffold(
-      child: Stack(
-        children: [
-          CustomScrollView(
-            slivers: [
-              const CupertinoSliverNavigationBar(
-                largeTitle: Text('Sıralamalar'),
-              ),
-              CupertinoSliverRefreshControl(
-                onRefresh: () async => _loadStandings(),
-              ),
-              if (_selectedSegment == 0)
-                _buildDriverStandingsSliver()
-              else
-                _buildConstructorStandingsSliver(),
-              const SliverPadding(
-                padding: EdgeInsets.only(bottom: 120),
-              ),
-            ],
+      child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          const CupertinoSliverNavigationBar(
+            largeTitle: Text('Sıralamalar'),
+          ),
+          CupertinoSliverRefreshControl(
+            onRefresh: () async => _loadStandings(),
           ),
 
-          // Alt Bar Üzerinde Duran Segment Butonu
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeInOut,
-            left: 0,
-            right: 0,
-            bottom: widget.isTabBarVisible ? tabBarHeight : (bottomInset > 0 ? bottomInset : 8),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: CupertinoColors.systemBackground.resolveFrom(context).withValues(alpha: 0.95),
-                border: const Border(
-                  top: BorderSide(
-                    color: CupertinoColors.systemGrey5,
-                    width: 0.5,
+          // 1. ÜST KISMA TAŞINAN LİQUİD GLASS SEGMENT KONTROLÜ
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          CupertinoColors.white.withValues(alpha: 0.26),
+                          CupertinoColors.white.withValues(alpha: 0.10),
+                        ],
+                      ),
+                      border: Border.all(
+                        color: CupertinoColors.white.withValues(alpha: 0.40),
+                        width: 1.0,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: CupertinoColors.black.withValues(alpha: 0.04),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: CupertinoSlidingSegmentedControl<int>(
+                        backgroundColor: CupertinoColors.tertiarySystemFill.resolveFrom(context).withValues(alpha: 0.15),
+                        thumbColor: CupertinoColors.white,
+                        groupValue: _selectedSegment,
+                        children: {
+                          0: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  CupertinoIcons.person_fill,
+                                  size: 15,
+                                  color: _selectedSegment == 0
+                                      ? const Color(0xFFE10600)
+                                      : CupertinoColors.secondaryLabel.resolveFrom(context),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Pilotlar',
+                                  style: TextStyle(
+                                    fontWeight: _selectedSegment == 0 ? FontWeight.w800 : FontWeight.w600,
+                                    fontSize: 13.5,
+                                    color: _selectedSegment == 0
+                                        ? const Color(0xFFE10600)
+                                        : CupertinoColors.label.resolveFrom(context),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          1: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  CupertinoIcons.flag_fill,
+                                  size: 15,
+                                  color: _selectedSegment == 1
+                                      ? const Color(0xFFE10600)
+                                      : CupertinoColors.secondaryLabel.resolveFrom(context),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Markalar',
+                                  style: TextStyle(
+                                    fontWeight: _selectedSegment == 1 ? FontWeight.w800 : FontWeight.w600,
+                                    fontSize: 13.5,
+                                    color: _selectedSegment == 1
+                                        ? const Color(0xFFE10600)
+                                        : CupertinoColors.label.resolveFrom(context),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        },
+                        onValueChanged: (val) {
+                          if (val != null) setState(() => _selectedSegment = val);
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ),
-              child: SizedBox(
-                width: double.infinity,
-                child: CupertinoSlidingSegmentedControl<int>(
-                  groupValue: _selectedSegment,
-                  children: const {
-                    0: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      child: Text('Pilotlar', style: TextStyle(fontWeight: FontWeight.w600)),
-                    ),
-                    1: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 7),
-                      child: Text('Markalar', style: TextStyle(fontWeight: FontWeight.w600)),
-                    ),
-                  },
-                  onValueChanged: (val) {
-                    if (val != null) setState(() => _selectedSegment = val);
-                  },
-                ),
-              ),
             ),
+          ),
+
+          // 2. LİSTE İÇERİĞİ
+          if (_selectedSegment == 0)
+            _buildDriverStandingsSliver()
+          else
+            _buildConstructorStandingsSliver(),
+
+          // 3. YÜZEN LİQUİD PİLL BOTTOM BAR İÇİN ALT BOŞLUK
+          const SliverPadding(
+            padding: EdgeInsets.only(bottom: 110),
           ),
         ],
       ),
@@ -193,6 +255,7 @@ class _StandingsViewState extends State<StandingsView> {
       },
     );
   }
+
   // Pilot Satırı: Sıralama no + Yuvarlak OpenF1 Fotoğrafı + İsim
   Widget _buildDriverTile(DriverStanding d) {
     final isTopThree = d.position == '1' || d.position == '2' || d.position == '3';
@@ -372,12 +435,11 @@ class _StandingsViewState extends State<StandingsView> {
             ),
           ),
           const SizedBox(width: 8),
-          // Gerçek Takım Logosu Rozeti
           Container(
             width: 32,
             height: 32,
             padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: CupertinoColors.white,
             ),
