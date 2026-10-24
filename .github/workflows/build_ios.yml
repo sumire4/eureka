@@ -1,0 +1,45 @@
+name: Build iOS IPA (Unsigned)
+
+on:
+  workflow_dispatch: # GitHub arayüzünden tek tıkla elle başlatabilmek için
+  push:
+    branches: [ main ] # veya kullandığın branch adı (örn: master)
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      # 1. Depoyu klonla
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Flutter ortamını kur
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      # 3. Bağımlılıkları yükle
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # 4. İmzasız iOS build (Release modunda kod imzalama atlanarak derlenir)
+      - name: Build iOS Application (No Codesign)
+        run: flutter build ios --release --no-codesign
+
+      # 5. Payload klasörü oluşturup Runner.app dosyasını .ipa formatına paketle
+      - name: Package into IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -r Eureka-Unsigned.ipa Payload
+
+      # 6. Üretilen .ipa dosyasını GitHub Artifacts olarak yükle
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Eureka-iOS-IPA
+          path: Eureka-Unsigned.ipa
+          retention-days: 7
