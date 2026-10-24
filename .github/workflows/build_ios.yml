@@ -1,42 +1,72 @@
 name: Build iOS IPA (Unsigned)
 
 on:
-  workflow_dispatch: # GitHub arayüzünden tek tıkla elle başlatabilmek için
+  workflow_dispatch:
   push:
-    branches: [ main ] # veya kullandığın branch adı (örn: master)
+    branches: [ master ]
 
 jobs:
   build-ios:
     runs-on: macos-latest
 
     steps:
-      # 1. Depoyu klonla
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2. Flutter ortamını kur
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
 
-      # 3. Bağımlılıkları yükle
+      # .env dosyasını kontrol et, yoksa derlemenin çökmemesi için sahte bir tane oluştur
+      - name: Ensure .env exists
+        run: |
+          if [ ! -f .env ]; then
+            echo "GEMINI_API_KEY=dummy_key_for_build" > .env
+          fi
+
       - name: Install Dependencies
         run: flutter pub get
 
-      # 4. İmzasız iOS build (Release modunda kod imzalama atlanarak derlenir)
-      - name: Build iOS Application (No Codesign)
-        run: flutter build ios --release --no-codesign
+      # Pod bağımlılıklarını kur
+      - name: Install Pods
+        run: |
+          cd ios
+          pod install
+          cd ..
 
-      # 5. Payload klasörü oluşturup Runner.app dosyasını .ipa formatına paketle
+      # Xcode'un imzalama zorunluluğunu bypass ederek derle
+      - name: Build iOS Application (Force No Codesign)
+        run: |
+          flutter build ios --release --no-codesign --config-only
+          cd ios
+          xcodebuild build \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER=""
+          cd ..
+
+      # Payload klasörü oluşturup Runner.app'i .ipa olarak paketle
       - name: Package into IPA
         run: |
           mkdir -p Payload
-          cp -r build/ios/iphoneos/Runner.app Payload/
+          # Üretilen app dosyasını bul ve kopyala
+          APP_PATH=$(find build/ios -name "Runner.app" -type d | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Runner.app" -type d | head -n 1)
+          fi
+          echo "Found app at: $APP_PATH"
+          cp -r "$APP_PATH" Payload/
           zip -r Eureka-Unsigned.ipa Payload
 
-      # 6. Üretilen .ipa dosyasını GitHub Artifacts olarak yükle
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
