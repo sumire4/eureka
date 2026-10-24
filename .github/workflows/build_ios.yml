@@ -7,7 +7,10 @@ on:
         description: 'Apple ID (E-posta)'
         required: true
       apple_password:
-        description: 'Apple ID Parolası (veya App-Specific Password)'
+        description: 'Apple ID Parolası'
+        required: true
+      device_udid:
+        description: 'iPhone UDID Numarası'
         required: true
 
 jobs:
@@ -33,42 +36,56 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Prepare iOS Config
-        run: flutter build ios --config-only --no-codesign
+      - name: Setup Fastlane & Development Certificate
+        env:
+          FASTLANE_USER: ${{ github.event.inputs.apple_id }}
+          FASTLANE_PASSWORD: ${{ github.event.inputs.apple_password }}
+        run: |
+          # Keychain oluştur
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security set-keychain-settings -t 3600 -u build.keychain
 
-      # Fastlane & Zsign aracıyla derleme ve imzalama
-      - name: Build Application
+          # Fastlane sigh ile profili indir / oluştur
+          bundle exec fastlane sigh development \
+            --username "${{ github.event.inputs.apple_id }}" \
+            --app_identifier "com.mete.eurekaapp" \
+            --force \
+            --ignore_profiles \
+            || true
+
+      - name: Build and Sign via Xcode
         run: |
           cd ios
-          xcodebuild build \
-            -workspace Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -destination 'generic/platform=iOS' \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY="" \
-            AD_HOC_CODE_SIGNING_ALLOWED=YES
+          # Runner projesini derle
+          flutter build ios --release --no-codesign
           cd ..
 
       - name: Install zsign tool
         run: brew install zsign
 
-      - name: Package Signed IPA
+      - name: Sign IPA with Downloaded Profile
         run: |
           mkdir -p Payload
           APP_PATH=$(find build/ios -name "Runner.app" -type d | head -n 1)
-          if [ -z "$APP_PATH" ]; then
-            APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Runner.app" -type d | head -n 1)
-          fi
           cp -r "$APP_PATH" Payload/
-          zip -r Eureka-Unsigned.ipa Payload
-          # zsign ile otomatik gömülü sertifikalama
-          zsign -k Payload/Runner.app -o Eureka-Ready.ipa Eureka-Unsigned.ipa || cp Eureka-Unsigned.ipa Eureka-Ready.ipa
+          zip -r Unsigned.ipa Payload
 
-      - name: Upload Ready IPA
+          # İndirilen provisioning profilini bul
+          PROV_PROFILE=$(find . -name "*.mobileprovision" | head -n 1)
+
+          if [ -n "$PROV_PROFILE" ]; then
+            echo "Profil bulundu: $PROV_PROFILE"
+            zsign -m "$PROV_PROFILE" -o Eureka-Signed.ipa Unsigned.ipa
+          else
+            echo "Profil doğrudan indirilemedi, Ad-Hoc imzalanıyor..."
+            zsign -o Eureka-Signed.ipa Unsigned.ipa
+          fi
+
+      - name: Upload Signed IPA
         uses: actions/upload-artifact@v4
         with:
           name: Eureka-iOS-Signed
-          path: Eureka-Ready.ipa
+          path: Eureka-Signed.ipa
           retention-days: 7
