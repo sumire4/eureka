@@ -23,7 +23,6 @@ class CarDetailView extends StatefulWidget {
 }
 
 class _CarDetailViewState extends State<CarDetailView> {
-  bool _isLoading = true;
   int _maxSpeed = 342;
   int _currentRpm = 11850;
   int _gear = 8;
@@ -58,14 +57,13 @@ class _CarDetailViewState extends State<CarDetailView> {
             _gear = (lastItem['n_gear'] as int?) ?? 8;
             _throttle = (lastItem['throttle'] as int?) ?? 100;
             _drsActive = ((lastItem['drs'] as int?) ?? 0) >= 10;
-            _isLoading = false;
           });
           return;
         }
       }
     } catch (_) {}
 
-    if (mounted) setState(() => _isLoading = false);
+    if (mounted) setState(() =>  false);
   }
 
   Map<String, String> _getTechnicalSpecs(String team) {

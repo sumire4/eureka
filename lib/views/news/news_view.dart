@@ -2,9 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../models/news_model.dart';
+import '../../services/dashboard_service.dart';
 import '../../services/gemini_service.dart';
 import '../../services/rss_service.dart';
 import 'news_detail_view.dart';
+import 'custom_feed_view.dart';
+import 'race_detail_view.dart';
 
 class NewsView extends StatefulWidget {
   const NewsView({super.key});
@@ -18,12 +21,32 @@ class _NewsViewState extends State<NewsView> {
   final GeminiService _geminiService = GeminiService();
   late Future<List<NewsItem>> _newsFuture;
 
+  // Hava durumu verisi değişkeni
+  WeatherData? _weather;
+  NextRaceInfo? _nextRace;
+
   final Set<String> _bookmarkedLinks = {};
 
   @override
   void initState() {
     super.initState();
     _refreshNews();
+    _loadWeather();
+    _loadNextRace();
+  }
+
+  void _loadNextRace() async {
+    final race = await DashboardService.fetchNextRace();
+    if (mounted) {
+      setState(() => _nextRace = race);
+    }
+  }
+
+  void _loadWeather() async {
+    final w = await DashboardService.fetchCurrentWeather();
+    if (mounted) {
+      setState(() => _weather = w);
+    }
   }
 
   void _refreshNews() {
@@ -94,17 +117,20 @@ class _NewsViewState extends State<NewsView> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Başlık & Gemini Rozeti
+                // Başlık & İkon
                 Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)],
+                        ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(
                         CupertinoIcons.sparkles,
-                        color: CupertinoColors.inactiveGray,
+                        color: CupertinoColors.white,
                         size: 16,
                       ),
                     ),
@@ -222,6 +248,148 @@ class _NewsViewState extends State<NewsView> {
     );
   }
 
+  Widget _buildHeaderWidgets(BuildContext context) {
+    final greeting = DashboardService.getGreeting();
+    final countdown = DashboardService.getCountdownToNextRace();
+
+    return Padding(
+      // Üst boşluk 4'ten 16'ya çıkarılarak büyük başlıktan uzaklaştırıldı
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 18),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 1. SOL BÖLÜM: Günaydın + Şehir + Derece & İkon
+            // 1. SOL BÖLÜM: Tıklanabilir Yapıldı (CustomFeedView'a gider)
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => CustomFeedView(initialWeather: _weather),
+                    ),
+                  );
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      greeting,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.6,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          CupertinoIcons.location_solid,
+                          size: 16,
+                          color: CupertinoColors.secondaryLabel,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          _weather?.cityName ?? 'Konum...',
+                          style: const TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w600,
+                            color: CupertinoColors.secondaryLabel,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Icon(
+                          _weather?.icon ?? CupertinoIcons.sun_max_fill,
+                          size: 22,
+                          color: const Color(0xFFFF9500),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          _weather != null ? '${_weather!.temperature.round()}°C' : '--°C',
+                          style: const TextStyle(
+                            fontSize: 17.5,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // ORTA DİKEY AYIRICI ÇİZGİ
+            Container(
+              width: 1,
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+              color: CupertinoColors.separator.resolveFrom(context),
+            ),
+
+            // 2. SAĞ BÖLÜM: Tıklanabilir Yapıldı (RaceDetailView'a gider)
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  final targetRace = _nextRace ?? NextRaceInfo.fallback();
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => RaceDetailView(race: targetRace),
+                    ),
+                  );
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.network(
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/500px-F1.svg.png',
+                      height: 18,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, _, _) => const Icon(
+                        CupertinoIcons.flag_fill,
+                        size: 18,
+                        color: Color(0xFFE10600),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      _nextRace?.countdownText ?? '1 gün 7 sa',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      _nextRace?.circuitName ?? 'Pist Belirleniyor...',
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        color: CupertinoColors.secondaryLabel,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSummaryBullet(String title, String desc) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,18 +425,29 @@ class _NewsViewState extends State<NewsView> {
                 largeTitle: Text('Haberler'),
               ),
               CupertinoSliverRefreshControl(
-                onRefresh: () async => _refreshNews(),
+                onRefresh: () async {
+                  _refreshNews();
+                  _loadWeather();
+                  _loadNextRace();
+                },
               ),
+
+              // Üst Widget Konteynerleri
+              SliverToBoxAdapter(
+                child: _buildHeaderWidgets(context),
+              ),
+
+              // Liste Durumları
               if (snapshot.connectionState == ConnectionState.waiting)
                 const SliverFillRemaining(
                   child: Center(child: CupertinoActivityIndicator(radius: 14)),
                 )
               else if (snapshot.hasError)
-                SliverFillRemaining(
+                const SliverFillRemaining(
                   child: Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: const Text(
+                      padding: EdgeInsets.all(24.0),
+                      child: Text(
                         'Haberler yüklenemedi.\nLütfen internet bağlantınızı kontrol edin.',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: CupertinoColors.destructiveRed),
