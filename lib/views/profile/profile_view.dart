@@ -11,6 +11,7 @@ class ProfileView extends StatelessWidget {
           const CupertinoSliverNavigationBar(
             largeTitle: Text('Profil'),
           ),
+
           // Kullanıcı Kartı
           SliverToBoxAdapter(
             child: CupertinoListSection.insetGrouped(
@@ -30,7 +31,10 @@ class ProfileView extends StatelessWidget {
                       color: CupertinoColors.systemGrey,
                     ),
                   ),
-                  title: const Text('Mete', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                  title: const Text(
+                    'Mete',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                  ),
                   subtitle: const Text('mete@example.com'),
                   trailing: const CupertinoListTileChevron(),
                   onTap: () {},
@@ -38,6 +42,7 @@ class ProfileView extends StatelessWidget {
               ],
             ),
           ),
+
           // Tercihler Bölümü
           SliverToBoxAdapter(
             child: CupertinoListSection.insetGrouped(
@@ -60,6 +65,7 @@ class ProfileView extends StatelessWidget {
               ],
             ),
           ),
+
           // Uygulama Ayarları Bölümü
           SliverToBoxAdapter(
             child: CupertinoListSection.insetGrouped(
@@ -88,6 +94,7 @@ class ProfileView extends StatelessWidget {
               ],
             ),
           ),
+
           // Çıkış Yap
           SliverToBoxAdapter(
             child: CupertinoListSection.insetGrouped(
@@ -106,6 +113,11 @@ class ProfileView extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+
+          // Alt Bar Boşluğu
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 100),
           ),
         ],
       ),

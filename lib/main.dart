@@ -4,13 +4,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/theme/ios_theme.dart';
 import 'views/news/news_view.dart';
 import 'views/standings/standings_view.dart';
-import 'views/ai/eureka_ai_view.dart';
 import 'views/profile/profile_view.dart';
-import 'widgets/liquid_bottom_bar.dart'; // 1. Liquid Bottom Bar import edildi
+import 'widgets/liquid_bottom_bar.dart';
+import 'views/ai/race_analysis_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // .env dosyasını belleğe yükle
   await dotenv.load(fileName: ".env");
   runApp(const EurekaApp());
 }
@@ -45,7 +44,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
     final views = [
       const NewsView(),
       StandingsView(isTabBarVisible: _isTabBarVisible),
-      const EurekaAiView(),
+      const RaceAnalysisPage(),
       const ProfileView(),
     ];
 
@@ -73,7 +72,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
               ),
             ),
 
-            // 2. Süzülen Liquid Glass Pill Bottom Bar
+            // 2. Özel Cam Pill Bottom Bar (Scroll Gizlemeli ve Sürüklemeli)
             Positioned(
               left: 0,
               right: 0,
