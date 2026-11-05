@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import '../../services/dashboard_service.dart';
+import 'package:eureka/views/news/circuit_navigation_card.dart';
 
 class RaceDetailView extends StatelessWidget {
   final NextRaceInfo race;
@@ -302,6 +303,12 @@ class RaceDetailView extends StatelessWidget {
                   trailing: Text('Pazar 23:00', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            CircuitNavigationCard(
+              circuitName: race.circuitName,
+              countryName: race.countryName,
+              meetingName: race.meetingName,
             ),
             const SizedBox(height: 30),
           ],

@@ -8,6 +8,8 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>Piste olan uzaklığınızı hesaplamak için konumunuza ihtiyaç duyuyoruz.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Eureka</string>
 	<key>CFBundleExecutable</key>
