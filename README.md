@@ -46,22 +46,6 @@
 
 **Eureka**, Formula 1 ve motor sporları takipçileri için **iOS Cupertino "Liquid Glass" (Sıvı Cam)** tasarım prensipleriyle geliştirilmiş çapraz platformlu (*iOS & Android*) bir mobil uygulamadır. Uygulama; güncel motor sporları haberlerini, canlı şampiyona verilerini, araç sensör telemetrilerini ve **Google Gemini + OpenF1** tabanlı istatistiksel yarış analizlerini tek bir arayüz altında birleştirir.
 
-### Temel Özellikler
-
-- **Haber Akışı, Şehir Bazlı RSS ve Yapay Zeka Özetleme:**
-  - Güncel Formula 1 haberlerinin XML/RSS ayrıştırma motoru ile çekilmesi ve uygulama içi okuma modunda (*Reader View* & *WebView*) sunulması.
-  - Her haber kartı üzerinde yer alan yapay zeka butonu (`✨`) aracılığıyla **Google Gemini 1.5 Flash** modeli üzerinden haberin *"Öne Çıkan"*, *"Puan/Yarış Etkisi"* ve *"Son Durum"* başlıklarında 3 maddelik anlık özetinin çıkarılması.
-  - Kullanıcının bulunduğu şehre göre otomatik yerel haber akışlarının (`CityRssService`) yüklenmesi ve özel RSS kaynaklarının eklenebilmesi.
-- **Pilotlar & Markalar Şampiyonası ve Canlı Telemetri:**
-  - Jolpica (Ergast) F1 API ve OpenF1 API verilerinin paralel olarak birleştirilmesiyle güncel pilot ve takım puan durumlarının listelenmesi.
-  - Pilot ve takım detay sayfalarında yarış otomobili teknik özelliklerinin (*Güç ünitesi, monokok şasi, şanzıman*) ve OpenF1 sensör yolu üzerinden **Zirve Hız (km/h)**, **Motor Devri (RPM)**, **Vites**, **Gaz Oranı (%)** ve **DRS** durumunun gösterilmesi.
-- **Eureka AI — İstatistiksel Yarış Tahmin Modeli ve Teknik Analiz:**
-  - Pilotların son 3 yarıştaki ağırlıklı form grafiği, güncel şampiyona puan oranı ve ilgili pistteki geçmiş yıl performanslarını birleştiren matematiksel model (*Softmax olasılık dağılımı*) ile kazanma/podyum olasılıklarının hesaplanması.
-  - Gerçek OpenF1 verileriyle (lastik hamuru *stint* stratejileri, pist ve hava sıcaklıkları, son yarış podyumu) beslenen **Google Gemini 2.5 Flash** entegrasyonu sayesinde halüsinasyondan arındırılmış teknik strateji ve risk analizlerinin üretilmesi.
-- **Pist Navigasyonu ve Mesafe Hesaplama:**
-  - Takvimdeki Formula 1 pistlerinin coğrafi koordinatları ile kullanıcının konumu arasındaki kuş uçuşu mesafenin hesaplanması ve **Apple Haritalar / Google Maps** üzerinden yol tarifi oluşturulması.
-
----
 
 ## Veri Gizliliği ve Uygulama İzinleri Politikası
 
@@ -87,7 +71,6 @@
 ## Teknoloji Yığını ve Mimari
 
 - **Çatı & Dil:** Flutter SDK & Dart (`^3.13.5`)
-- **Arayüz Tasarımı:** iOS Cupertino Design System & Özel *Liquid Glass* (`BackdropFilter` + Bulanıklık Katmanları)
 - **Yapay Zeka Servisleri:** Google Gemini REST API (`gemini-1.5-flash` & `gemini-2.5-flash`)
 - **Spor & Telemetri API'leri:** OpenF1 API v1 (İstek Kuyruklama + 10 dk Önbellek Mekanizması), Jolpica (Ergast) F1 API
 - **Hava Durumu & Konum:** OpenWeatherMap API, `geolocator` (`^14.1.2`)
