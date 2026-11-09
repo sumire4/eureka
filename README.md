@@ -1,4 +1,4 @@
-# 🏎️ Eureka — Yapay Zeka Destekli Formula 1 Haber, Canlı Telemetri ve Yarış Analiz Platformu
+# Eureka — Formula 1 Haber, Canlı Telemetri ve Yarış Analiz Platformu
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.13%2B-02569B?logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-3.13%2B-0175C2?logo=dart&logoColor=white)
@@ -11,7 +11,7 @@
 
 ---
 
-## 📱 Uygulama Ekran Görüntüleri
+## Ekran Görüntüleri
 
 <p align="center">
   <table>
@@ -42,28 +42,28 @@
 
 ---
 
-## 🎯 Proje Hakkında
+## Proje Hakkında
 
 **Eureka**, Formula 1 ve motor sporları takipçileri için **iOS Cupertino "Liquid Glass" (Sıvı Cam)** tasarım prensipleriyle geliştirilmiş çapraz platformlu (*iOS & Android*) bir mobil uygulamadır. Uygulama; güncel motor sporları haberlerini, canlı şampiyona verilerini, araç sensör telemetrilerini ve **Google Gemini + OpenF1** tabanlı istatistiksel yarış analizlerini tek bir arayüz altında birleştirir.
 
 ### Temel Özellikler
 
-- **📰 Haber Akışı, Şehir Bazlı RSS ve Yapay Zeka Özetleme:**
+- **Haber Akışı, Şehir Bazlı RSS ve Yapay Zeka Özetleme:**
   - Güncel Formula 1 haberlerinin XML/RSS ayrıştırma motoru ile çekilmesi ve uygulama içi okuma modunda (*Reader View* & *WebView*) sunulması.
   - Her haber kartı üzerinde yer alan yapay zeka butonu (`✨`) aracılığıyla **Google Gemini 1.5 Flash** modeli üzerinden haberin *"Öne Çıkan"*, *"Puan/Yarış Etkisi"* ve *"Son Durum"* başlıklarında 3 maddelik anlık özetinin çıkarılması.
   - Kullanıcının bulunduğu şehre göre otomatik yerel haber akışlarının (`CityRssService`) yüklenmesi ve özel RSS kaynaklarının eklenebilmesi.
-- **🏆 Pilotlar & Markalar Şampiyonası ve Canlı Telemetri:**
+- **Pilotlar & Markalar Şampiyonası ve Canlı Telemetri:**
   - Jolpica (Ergast) F1 API ve OpenF1 API verilerinin paralel olarak birleştirilmesiyle güncel pilot ve takım puan durumlarının listelenmesi.
   - Pilot ve takım detay sayfalarında yarış otomobili teknik özelliklerinin (*Güç ünitesi, monokok şasi, şanzıman*) ve OpenF1 sensör yolu üzerinden **Zirve Hız (km/h)**, **Motor Devri (RPM)**, **Vites**, **Gaz Oranı (%)** ve **DRS** durumunun gösterilmesi.
-- **🤖 Eureka AI — İstatistiksel Yarış Tahmin Modeli ve Teknik Analiz:**
+- **Eureka AI — İstatistiksel Yarış Tahmin Modeli ve Teknik Analiz:**
   - Pilotların son 3 yarıştaki ağırlıklı form grafiği, güncel şampiyona puan oranı ve ilgili pistteki geçmiş yıl performanslarını birleştiren matematiksel model (*Softmax olasılık dağılımı*) ile kazanma/podyum olasılıklarının hesaplanması.
   - Gerçek OpenF1 verileriyle (lastik hamuru *stint* stratejileri, pist ve hava sıcaklıkları, son yarış podyumu) beslenen **Google Gemini 2.5 Flash** entegrasyonu sayesinde halüsinasyondan arındırılmış teknik strateji ve risk analizlerinin üretilmesi.
-- **📍 Pist Navigasyonu ve Mesafe Hesaplama:**
+- **Pist Navigasyonu ve Mesafe Hesaplama:**
   - Takvimdeki Formula 1 pistlerinin coğrafi koordinatları ile kullanıcının konumu arasındaki kuş uçuşu mesafenin hesaplanması ve **Apple Haritalar / Google Maps** üzerinden yol tarifi oluşturulması.
 
 ---
 
-## 🔒 Veri Gizliliği ve Uygulama İzinleri Politikası
+## Veri Gizliliği ve Uygulama İzinleri Politikası
 
 **Eureka** uygulaması, kullanıcı mahremiyetini ve veri güvenliğini temel öncelik olarak kabul eder. Uygulama kapsamında talep edilen cihaz izinleri, kullanım amaçları ve veri işleme ilkeleri aşağıda resmi olarak beyan edilmiştir:
 
@@ -84,7 +84,7 @@
 
 ---
 
-## 🛠️ Teknoloji Yığını ve Mimari
+## Teknoloji Yığını ve Mimari
 
 - **Çatı & Dil:** Flutter SDK & Dart (`^3.13.5`)
 - **Arayüz Tasarımı:** iOS Cupertino Design System & Özel *Liquid Glass* (`BackdropFilter` + Bulanıklık Katmanları)
@@ -93,34 +93,8 @@
 - **Hava Durumu & Konum:** OpenWeatherMap API, `geolocator` (`^14.1.2`)
 - **Ağ, Veri ve Depolama:** `http` (`^1.2.2`), `xml` (`^6.5.0`), `shared_preferences` (`^2.5.6`), `flutter_dotenv` (`^6.0.1`), `webview_flutter` (`^4.14.1`), `url_launcher` (`^6.3.0`), `share_plus`
 
-### Proje Dizin Yapısı
 
-```text
-lib/
-├── main.dart                          # Uygulama giriş noktası ve MainTabScaffold
-├── core/theme/ios_theme.dart          # Cupertino tema ve tipografi yapılandırması
-├── models/news_model.dart             # Haber veri modeli
-├── services/                          # API, RSS, Hava Durumu ve Yapay Zeka servis katmanı
-│   ├── city_rss_service.dart
-│   ├── dashboard_service.dart
-│   ├── gemini_service.dart
-│   ├── rss_service.dart
-│   └── standings_service.dart
-├── widgets/                           # Özel Liquid Glass bileşenleri ve alt navigasyon barı
-│   ├── ios27_switch.dart
-│   ├── ios_glass_dialog.dart
-│   ├── liquid_bottom_bar.dart
-│   └── liquid_glass_list.dart
-└── views/                             # Uygulama ekranları (Haberler, Sıralama, Eureka YZ, Profil)
-    ├── ai/
-    ├── news/
-    ├── profile/
-    └── standings/
-```
-
----
-
-## 🚀 Kurulum ve Çalıştırma
+##  Kurulum ve Çalıştırma
 
 1. **Projeyi klonlayın:**
    ```bash
