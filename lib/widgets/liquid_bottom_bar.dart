@@ -18,19 +18,24 @@ class LiquidPillBottomBar extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
   final List<LiquidBottomBarItem> items;
+  final bool isCompact; // Aşağı kaydırınca küçülme bayrağı
 
   static const Color accentRed = Color(0xFFE10600);
 
-  static const double _height = 68;
-  static const double _itemWidth = 88;
-  static const double _iconSize = 26;
-  static const double _labelSize = 11;
+  // Standart ve Kompakt Ölçüler
+  static const double _barHeightNormal = 62.0;
+  static const double _barHeightCompact = 52.0;
+  static const double _pillHeightNormal = 54.0;
+  static const double _pillHeightCompact = 44.0;
+  static const double _iconSize = 22.0;
+  static const double _fontSize = 10.0;
 
   const LiquidPillBottomBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
     required this.items,
+    this.isCompact = false,
   });
 
   @override
@@ -38,24 +43,19 @@ class LiquidPillBottomBar extends StatefulWidget {
 }
 
 class _LiquidPillBottomBarState extends State<LiquidPillBottomBar> {
-  // Parmağın basılı tutulup gezdirildiği anlık sekme indeksi
   int? _hoveredIndex;
 
-  void _updateIndexFromPosition(Offset localPosition) {
-    // Toplam genişlik ve x eksenindeki ofset hesaplaması
-    final double totalWidth = widget.items.length * LiquidPillBottomBar._itemWidth;
-    final double dx = localPosition.dx - 8; // 8px horizontal padding dengesi
+  void _updateIndexFromPosition(Offset localPosition, double itemWidth) {
+    const double horizontalMargin = 4.0;
+    final double dx = localPosition.dx - horizontalMargin;
 
-    if (dx >= 0 && dx < totalWidth) {
-      final int newIndex = (dx / LiquidPillBottomBar._itemWidth)
+    if (dx >= 0 && itemWidth > 0) {
+      final int newIndex = (dx / itemWidth)
           .floor()
           .clamp(0, widget.items.length - 1);
 
       if (newIndex != _hoveredIndex) {
-        setState(() {
-          _hoveredIndex = newIndex;
-        });
-        // İkonlar arası gezerken iOS dokunsal geri bildirimi
+        setState(() => _hoveredIndex = newIndex);
         HapticFeedback.selectionClick();
         widget.onTap(newIndex);
       }
@@ -64,142 +64,202 @@ class _LiquidPillBottomBarState extends State<LiquidPillBottomBar> {
 
   @override
   Widget build(BuildContext context) {
-    final hasHomeIndicator = MediaQuery.of(context).padding.bottom > 0;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
     final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
     final activeIndex = _hoveredIndex ?? widget.currentIndex;
 
-    // Seçili butonun arka plan vurgusu
-    final selectedBgColor = isDark
-        ? CupertinoColors.white.withValues(alpha: 0.14)
-        : CupertinoColors.black.withValues(alpha: 0.08);
+    final currentBarHeight = widget.isCompact
+        ? LiquidPillBottomBar._barHeightCompact
+        : LiquidPillBottomBar._barHeightNormal;
 
-    // Arkadaki görsel ve renklerin okunurluğu bozmaması için artırılmış cam opaklığı
-    final glassTop = isDark ? const Color(0x992C2C2E) : const Color(0xF2FFFFFF);
-    final glassBottom = isDark ? const Color(0x801C1C1E) : const Color(0xD9FFFFFF);
-    final glassTint = isDark ? const Color(0xCC121214) : const Color(0xCCFFFFFF);
+    final currentPillHeight = widget.isCompact
+        ? LiquidPillBottomBar._pillHeightCompact
+        : LiquidPillBottomBar._pillHeightNormal;
 
-    // Açık temada okunurluğu korumak için kontrastı artırılmış pasif renk
-    final inactiveColor = isDark
+    final double barRadius = currentBarHeight / 2;
+    final double pillRadius = currentPillHeight / 2;
+
+    // Figma iOS 27 Renk ve Gölgeleri
+    final glassTopColor = isDark
+        ? const Color(0xFF282828).withValues(alpha: 0.70)
+        : const Color(0xFFE6E6E6).withValues(alpha: 0.88);
+
+    final glassBottomColor = isDark
+        ? const Color(0xFF141416).withValues(alpha: 0.85)
+        : const Color(0xFFFFFFFF).withValues(alpha: 0.75);
+
+    final borderRimColor = isDark
+        ? CupertinoColors.white.withValues(alpha: 0.18)
+        : CupertinoColors.white.withValues(alpha: 0.70);
+
+    final activePillColor = isDark
+        ? CupertinoColors.white.withValues(alpha: 0.15)
+        : CupertinoColors.black.withValues(alpha: 0.07);
+
+    final inactiveLabelColor = isDark
         ? const Color(0xFF8E8E93)
-        : const Color(0xFF3C3C43).withValues(alpha: 0.85);
+        : const Color(0xFF3C3C43).withValues(alpha: 0.80);
 
     final shadowColor = isDark
         ? CupertinoColors.black.withValues(alpha: 0.45)
-        : CupertinoColors.black.withValues(alpha: 0.14);
+        : CupertinoColors.black.withValues(alpha: 0.12);
 
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.only(bottom: hasHomeIndicator ? 4 : 12),
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: bottomPadding > 0 ? 4 : 12,
+        ),
         child: Center(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(LiquidPillBottomBar._height / 2),
-              boxShadow: [
-                BoxShadow(
-                  color: shadowColor,
-                  blurRadius: 28,
-                  spreadRadius: -2,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(LiquidPillBottomBar._height / 2),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 45, sigmaY: 45),
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onPanStart: (details) => _updateIndexFromPosition(details.localPosition),
-                  onPanUpdate: (details) => _updateIndexFromPosition(details.localPosition),
-                  onPanEnd: (_) => setState(() => _hoveredIndex = null),
-                  onPanCancel: () => setState(() => _hoveredIndex = null),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    height: LiquidPillBottomBar._height,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: glassTint,
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          glassTop,
-                          glassBottom,
-                        ],
+          // Kaydırırken hafif küçülme animasyonu (Scale 0.94x)
+          child: AnimatedScale(
+            scale: widget.isCompact ? 0.94 : 1.0,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutCubic,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 360),
+              // Yüksekliğin animasyonla daralması
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutCubic,
+                height: currentBarHeight,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(barRadius),
+                    boxShadow: [
+                      BoxShadow(
+                        color: shadowColor,
+                        blurRadius: widget.isCompact ? 16 : 28,
+                        spreadRadius: -4,
+                        offset: Offset(0, widget.isCompact ? 6 : 10),
                       ),
-                      borderRadius: BorderRadius.circular(LiquidPillBottomBar._height / 2),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(widget.items.length, (index) {
-                        final isSelected = index == activeIndex;
-                        final isDragging = _hoveredIndex != null && isSelected;
-                        final item = widget.items[index];
-                        final color = isSelected ? LiquidPillBottomBar.accentRed : inactiveColor;
-
-                        return Semantics(
-                          button: true,
-                          selected: isSelected,
-                          label: item.label.isEmpty ? null : item.label,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
-                              HapticFeedback.lightImpact();
-                              widget.onTap(index);
-                            },
-                            child: SizedBox(
-                              width: LiquidPillBottomBar._itemWidth,
-                              height: LiquidPillBottomBar._height,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  curve: Curves.easeOutCubic,
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? selectedBgColor : const Color(0x00000000),
-                                    borderRadius: BorderRadius.circular(
-                                        (LiquidPillBottomBar._height - 12) / 2),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      AnimatedScale(
-                                        scale: isDragging ? 1.20 : (isSelected ? 1.08 : 1.0),
-                                        duration: const Duration(milliseconds: 180),
-                                        curve: Curves.easeOutCubic,
-                                        child: Icon(
-                                          isSelected ? item.activeIcon : item.icon,
-                                          size: LiquidPillBottomBar._iconSize,
-                                          color: color,
-                                        ),
-                                      ),
-                                      if (item.label.isNotEmpty) ...[
-                                        const SizedBox(height: 3),
-                                        AnimatedDefaultTextStyle(
-                                          duration: const Duration(milliseconds: 180),
-                                          style: TextStyle(
-                                            fontSize: LiquidPillBottomBar._labelSize,
-                                            height: 1.1,
-                                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                            color: color,
-                                            decoration: TextDecoration.none,
-                                          ),
-                                          child: Text(
-                                            item.label,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(barRadius),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(barRadius),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [glassTopColor, glassBottomColor],
                           ),
-                        );
-                      }),
+                          border: Border.all(
+                            color: borderRimColor,
+                            width: 0.8,
+                          ),
+                        ),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            const double horizontalMargin = 4.0;
+                            final double availableWidth = constraints.maxWidth - (horizontalMargin * 2);
+                            final double dynamicItemWidth = availableWidth / widget.items.length;
+
+                            return GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onPanStart: (d) => _updateIndexFromPosition(d.localPosition, dynamicItemWidth),
+                              onPanUpdate: (d) => _updateIndexFromPosition(d.localPosition, dynamicItemWidth),
+                              onPanEnd: (_) => setState(() => _hoveredIndex = null),
+                              onPanCancel: () => setState(() => _hoveredIndex = null),
+                              child: Stack(
+                                alignment: Alignment.centerLeft,
+                                children: [
+                                  // 1. Kayan Aktif Hap (Yüksekliği de barla orantılı küçülür)
+                                  AnimatedPositioned(
+                                    duration: const Duration(milliseconds: 240),
+                                    curve: Curves.easeOutCubic,
+                                    left: horizontalMargin + (activeIndex * dynamicItemWidth),
+                                    top: (currentBarHeight - currentPillHeight) / 2,
+                                    width: dynamicItemWidth,
+                                    height: currentPillHeight,
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 250),
+                                      curve: Curves.easeOutCubic,
+                                      decoration: BoxDecoration(
+                                        color: activePillColor,
+                                        borderRadius: BorderRadius.circular(pillRadius),
+                                      ),
+                                    ),
+                                  ),
+
+                                  // 2. İkonlar ve Metinler
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: horizontalMargin),
+                                    child: Row(
+                                      children: List.generate(widget.items.length, (index) {
+                                        final isSelected = index == activeIndex;
+                                        final isDragging = _hoveredIndex != null && isSelected;
+                                        final item = widget.items[index];
+                                        final color = isSelected
+                                            ? LiquidPillBottomBar.accentRed
+                                            : inactiveLabelColor;
+
+                                        return Expanded(
+                                          child: GestureDetector(
+                                            behavior: HitTestBehavior.opaque,
+                                            onTap: () {
+                                              HapticFeedback.lightImpact();
+                                              widget.onTap(index);
+                                            },
+                                            child: SizedBox(
+                                              height: currentBarHeight,
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  AnimatedScale(
+                                                    scale: isDragging ? 1.15 : (isSelected ? 1.05 : 1.0),
+                                                    duration: const Duration(milliseconds: 180),
+                                                    curve: Curves.easeOutCubic,
+                                                    child: Icon(
+                                                      isSelected ? item.activeIcon : item.icon,
+                                                      size: LiquidPillBottomBar._iconSize,
+                                                      color: color,
+                                                    ),
+                                                  ),
+                                                  // Kaydırma esnasında etiket hafifçe gizlenir, sadece şık ikon kalır
+                                                  AnimatedCrossFade(
+                                                    duration: const Duration(milliseconds: 180),
+                                                    crossFadeState: widget.isCompact
+                                                        ? CrossFadeState.showSecond
+                                                        : CrossFadeState.showFirst,
+                                                    firstChild: Padding(
+                                                      padding: const EdgeInsets.only(top: 2.5),
+                                                      child: Text(
+                                                        item.label,
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(
+                                                          fontFamily: 'SF Pro',
+                                                          fontSize: LiquidPillBottomBar._fontSize,
+                                                          fontWeight: isSelected
+                                                              ? FontWeight.w600
+                                                              : FontWeight.w500,
+                                                          color: color,
+                                                          decoration: TextDecoration.none,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    secondChild: const SizedBox.shrink(),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ),

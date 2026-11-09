@@ -5,8 +5,18 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart';
 import '../../models/news_model.dart';
+import '../../services/city_rss_service.dart';
 import '../../services/dashboard_service.dart';
 import 'news_detail_view.dart';
+
+// Feed metadata öğesi (Şehir veya Manuel)
+class FeedSource {
+  final String title;
+  final String url;
+  final bool isCityFeed;
+
+  FeedSource({required this.title, required this.url, this.isCityFeed = false});
+}
 
 class CustomFeedView extends StatefulWidget {
   final WeatherData? initialWeather;
@@ -19,7 +29,7 @@ class CustomFeedView extends StatefulWidget {
 
 class _CustomFeedViewState extends State<CustomFeedView> {
   WeatherData? _weather;
-  List<String> _savedFeeds = [];
+  List<FeedSource> _allFeeds = [];
   String? _selectedFeedUrl;
   List<NewsItem> _customNews = [];
   bool _isLoadingNews = false;
@@ -29,7 +39,7 @@ class _CustomFeedViewState extends State<CustomFeedView> {
   void initState() {
     super.initState();
     _weather = widget.initialWeather;
-    _loadSavedFeeds();
+    _initializeFeeds();
     if (_weather == null) {
       _refreshWeather();
     }
@@ -37,19 +47,47 @@ class _CustomFeedViewState extends State<CustomFeedView> {
 
   void _refreshWeather() async {
     final w = await DashboardService.fetchCurrentWeather();
-    if (mounted) setState(() => _weather = w);
+    if (mounted) {
+      setState(() => _weather = w);
+      // Hava durumu geldiğinde o şehre ait RSS akışlarını güncelle
+      if (w != null && w.cityName.isNotEmpty) {
+        _initializeFeeds();
+      }
+    }
   }
 
-  Future<void> _loadSavedFeeds() async {
+  Future<void> _initializeFeeds() async {
     final prefs = await SharedPreferences.getInstance();
-    final feeds = prefs.getStringList('custom_rss_urls') ?? [];
-    debugPrint('Yüklü Kayıtlı RSS Listesi: $feeds');
+    final manualUrls = prefs.getStringList('custom_rss_urls') ?? [];
+
+    // 1. Şehre özel akışları çek
+    final cityList = CityRssService.getFeedsForCity(_weather?.cityName);
+    final List<FeedSource> aggregated = [];
+
+    // Şehir kaynaklarını ekle
+    for (var c in cityList) {
+      aggregated.add(FeedSource(
+        title: c['name'] ?? 'Yerel Kaynak',
+        url: c['url']!,
+        isCityFeed: true,
+      ));
+    }
+
+    // 2. Kullanıcının manuel eklediklerini ekle
+    for (var url in manualUrls) {
+      final host = Uri.tryParse(url)?.host.replaceFirst('www.', '') ?? 'Özel Akış';
+      aggregated.add(FeedSource(
+        title: host,
+        url: url,
+        isCityFeed: false,
+      ));
+    }
 
     if (mounted) {
       setState(() {
-        _savedFeeds = List.from(feeds);
-        if (_savedFeeds.isNotEmpty && _selectedFeedUrl == null) {
-          _selectedFeedUrl = _savedFeeds.first;
+        _allFeeds = aggregated;
+        if (_allFeeds.isNotEmpty && (_selectedFeedUrl == null || !_allFeeds.any((f) => f.url == _selectedFeedUrl))) {
+          _selectedFeedUrl = _allFeeds.first.url;
         }
       });
     }
@@ -73,16 +111,11 @@ class _CustomFeedViewState extends State<CustomFeedView> {
     if (!currentList.contains(cleanUrl)) {
       currentList.add(cleanUrl);
       await prefs.setStringList('custom_rss_urls', currentList);
-      debugPrint('RSS Başarıyla Kaydedildi: $cleanUrl');
     }
 
-    if (mounted) {
-      setState(() {
-        _savedFeeds = List.from(currentList);
-        _selectedFeedUrl = cleanUrl;
-      });
-      _fetchFeedContent(cleanUrl);
-    }
+    await _initializeFeeds();
+    setState(() => _selectedFeedUrl = cleanUrl);
+    _fetchFeedContent(cleanUrl);
   }
 
   Future<void> _deleteFeed(String url) async {
@@ -91,19 +124,7 @@ class _CustomFeedViewState extends State<CustomFeedView> {
     currentList.remove(url);
     await prefs.setStringList('custom_rss_urls', currentList);
 
-    if (mounted) {
-      setState(() {
-        _savedFeeds = List.from(currentList);
-        _selectedFeedUrl = _savedFeeds.isNotEmpty ? _savedFeeds.first : null;
-        if (_selectedFeedUrl == null) {
-          _customNews = [];
-        }
-      });
-    }
-
-    if (_selectedFeedUrl != null) {
-      _fetchFeedContent(_selectedFeedUrl!);
-    }
+    await _initializeFeeds();
   }
 
   Future<void> _fetchFeedContent(String url) async {
@@ -111,8 +132,6 @@ class _CustomFeedViewState extends State<CustomFeedView> {
       _isLoadingNews = true;
       _errorMessage = null;
     });
-
-    debugPrint('RSS Çekiliyor: $url');
 
     try {
       final uri = Uri.parse(url.trim());
@@ -123,8 +142,6 @@ class _CustomFeedViewState extends State<CustomFeedView> {
           'Accept': 'application/rss+xml, application/xml, text/xml, */*',
         },
       ).timeout(const Duration(seconds: 12));
-
-      debugPrint('RSS Yanıt Kodu: ${res.statusCode}');
 
       if (res.statusCode == 200) {
         String rawXml;
@@ -140,8 +157,6 @@ class _CustomFeedViewState extends State<CustomFeedView> {
         if (nodes.isEmpty) {
           nodes = document.findAllElements('entry').toList();
         }
-
-        debugPrint('Bulunan Haber Sayısı: ${nodes.length}');
 
         final List<NewsItem> parsedList = [];
 
@@ -164,7 +179,6 @@ class _CustomFeedViewState extends State<CustomFeedView> {
               node.findElements('updated').firstOrNull?.innerText ??
               '';
 
-          // Resim bulma
           String? imageUrl;
           final enclosure = node.findElements('enclosure').firstOrNull;
           if (enclosure != null) {
@@ -207,12 +221,10 @@ class _CustomFeedViewState extends State<CustomFeedView> {
             _isLoadingNews = false;
           });
         }
-        return;
       } else {
         throw Exception('Sunucu yanıt vermedi (Kod: ${res.statusCode})');
       }
     } catch (e) {
-      debugPrint('RSS Hatası: $e');
       if (mounted) {
         setState(() {
           _customNews = [];
@@ -248,7 +260,6 @@ class _CustomFeedViewState extends State<CustomFeedView> {
           CupertinoDialogAction(
             isDefaultAction: true,
             onPressed: () {
-              // Metni pop etmeden önce hafızaya alıyoruz
               final inputUrl = textController.text;
               Navigator.of(ctx).pop();
               if (inputUrl.trim().isNotEmpty) {
@@ -266,7 +277,7 @@ class _CustomFeedViewState extends State<CustomFeedView> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Özel Akış & Detay'),
+        middle: const Text('Özel & Yerel Akış'),
         previousPageTitle: 'Geri',
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
@@ -278,58 +289,20 @@ class _CustomFeedViewState extends State<CustomFeedView> {
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-            // 1. Detaylı Hava Durumu
             SliverToBoxAdapter(
               child: _buildDetailedWeatherSection(context),
             ),
-
-            // 2. RSS Kapsülleri (Eklenenler)
             SliverToBoxAdapter(
               child: _buildFeedSelector(context),
             ),
-
-            // 3. İçerik / Durumlar
             if (_isLoadingNews)
               const SliverFillRemaining(
                 child: Center(child: CupertinoActivityIndicator(radius: 14)),
               )
-            else if (_savedFeeds.isEmpty)
-              SliverFillRemaining(
+            else if (_allFeeds.isEmpty)
+              const SliverFillRemaining(
                 hasScrollBody: false,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(CupertinoIcons.antenna_radiowaves_left_right, size: 50, color: CupertinoColors.systemGrey3),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'Henüz RSS Akışı Eklenmedi',
-                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Sağ üstteki "+" simgesine dokunarak veya aşağıdaki hazır kaynaklardan birini seçerek hemen başlayın:',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 13, color: CupertinoColors.secondaryLabel),
-                        ),
-                        const SizedBox(height: 20),
-                        // Hızlı Test Butonları
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          alignment: WrapAlignment.center,
-                          children: [
-                            _buildPresetButton('Motorsport F1', 'https://tr.motorsport.com/rss/f1/news/'),
-                            _buildPresetButton('NTV Spor', 'https://www.ntvspor.net/rss'),
-                            _buildPresetButton('TRT Spor', 'https://www.trtspor.com.tr/rss.xml'),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                child: Center(child: Text('Akış kaynağı bulunamadı.')),
               )
             else if (_errorMessage != null)
                 SliverFillRemaining(
@@ -350,7 +323,7 @@ class _CustomFeedViewState extends State<CustomFeedView> {
                     hasScrollBody: false,
                     child: Center(
                       child: Text(
-                        'Bu akışta henüz gösterilecek haber bulunamadı.',
+                        'Bu akışta henüz haber bulunamadı.',
                         style: TextStyle(color: CupertinoColors.secondaryLabel),
                       ),
                     ),
@@ -359,19 +332,6 @@ class _CustomFeedViewState extends State<CustomFeedView> {
                   _buildNewsSliverList(),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildPresetButton(String title, String url) {
-    return CupertinoButton(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      color: CupertinoColors.systemGrey6.resolveFrom(context),
-      borderRadius: BorderRadius.circular(12),
-      onPressed: () => _addFeed(url),
-      child: Text(
-        '+ $title',
-        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFFE10600)),
       ),
     );
   }
@@ -399,7 +359,7 @@ class _CustomFeedViewState extends State<CustomFeedView> {
                     const Icon(CupertinoIcons.location_fill, size: 18, color: Color(0xFFE10600)),
                     const SizedBox(width: 6),
                     Text(
-                      _weather?.cityName ?? 'Konum...',
+                      _weather?.cityName ?? 'Konum Alınıyor...',
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -420,40 +380,14 @@ class _CustomFeedViewState extends State<CustomFeedView> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: CupertinoColors.systemGrey6.resolveFrom(context),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _weatherDetailItem('Durum', 'Açık / Parçalı'),
-                  _weatherDetailItem('Rüzgar', '12 km/s'),
-                  _weatherDetailItem('Nem', '%48'),
-                ],
-              ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _weatherDetailItem(String label, String val) {
-    return Column(
-      children: [
-        Text(label, style: const TextStyle(fontSize: 10.5, color: CupertinoColors.secondaryLabel, fontWeight: FontWeight.w500)),
-        const SizedBox(height: 2),
-        Text(val, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold)),
-      ],
-    );
-  }
-
   Widget _buildFeedSelector(BuildContext context) {
-    if (_savedFeeds.isEmpty) return const SizedBox.shrink();
+    if (_allFeeds.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -462,31 +396,34 @@ class _CustomFeedViewState extends State<CustomFeedView> {
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: _savedFeeds.length,
+          itemCount: _allFeeds.length,
           itemBuilder: (context, idx) {
-            final feed = _savedFeeds[idx];
-            final isSelected = feed == _selectedFeedUrl;
-            final host = Uri.tryParse(feed)?.host.replaceFirst('www.', '') ?? 'Akış ${idx + 1}';
+            final feed = _allFeeds[idx];
+            final isSelected = feed.url == _selectedFeedUrl;
 
             return Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: GestureDetector(
                 onTap: () {
-                  setState(() => _selectedFeedUrl = feed);
-                  _fetchFeedContent(feed);
+                  setState(() => _selectedFeedUrl = feed.url);
+                  _fetchFeedContent(feed.url);
                 },
                 onLongPress: () {
+                  if (feed.isCityFeed) {
+                    // Konum bazlı yerel akışlar silinmez, bildirim verilir
+                    return;
+                  }
                   HapticFeedback.heavyImpact();
                   showCupertinoModalPopup(
                     context: context,
                     builder: (ctx) => CupertinoActionSheet(
-                      title: Text(feed),
+                      title: Text(feed.title),
                       actions: [
                         CupertinoActionSheetAction(
                           isDestructiveAction: true,
                           onPressed: () {
                             Navigator.of(ctx).pop();
-                            _deleteFeed(feed);
+                            _deleteFeed(feed.url);
                           },
                           child: const Text('Bu Akışı Kaldır'),
                         ),
@@ -504,15 +441,26 @@ class _CustomFeedViewState extends State<CustomFeedView> {
                     color: isSelected ? const Color(0xFFE10600) : CupertinoColors.systemGrey6.resolveFrom(context),
                     borderRadius: BorderRadius.circular(19),
                   ),
-                  child: Center(
-                    child: Text(
-                      host,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.bold,
-                        color: isSelected ? CupertinoColors.white : CupertinoColors.label.resolveFrom(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (feed.isCityFeed) ...[
+                        Icon(
+                          CupertinoIcons.placemark,
+                          size: 13,
+                          color: isSelected ? CupertinoColors.white : CupertinoColors.systemGrey,
+                        ),
+                        const SizedBox(width: 4),
+                      ],
+                      Text(
+                        feed.title,
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.bold,
+                          color: isSelected ? CupertinoColors.white : CupertinoColors.label.resolveFrom(context),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),

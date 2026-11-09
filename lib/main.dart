@@ -37,26 +37,29 @@ class MainTabScaffold extends StatefulWidget {
 
 class _MainTabScaffoldState extends State<MainTabScaffold> {
   int _currentIndex = 0;
-  bool _isTabBarVisible = true;
+  bool _isCompact = false; // Barın hafif küçülmesini sağlayan durum
 
   @override
   Widget build(BuildContext context) {
     final views = [
       const NewsView(),
-      StandingsView(isTabBarVisible: _isTabBarVisible),
+      const StandingsView(isTabBarVisible: true),
       const RaceAnalysisPage(),
       const ProfileView(),
     ];
 
     return NotificationListener<UserScrollNotification>(
       onNotification: (notification) {
+        // Aşağı kaydırırken: Bar kaybolmaz, hafifçe kompakt moda geçer
         if (notification.direction == ScrollDirection.reverse) {
-          if (_isTabBarVisible) {
-            setState(() => _isTabBarVisible = false);
+          if (!_isCompact) {
+            setState(() => _isCompact = true);
           }
-        } else if (notification.direction == ScrollDirection.forward) {
-          if (!_isTabBarVisible) {
-            setState(() => _isTabBarVisible = true);
+        }
+        // Yukarı kaydırırken veya durunca: Normal boyutuna geri döner
+        else if (notification.direction == ScrollDirection.forward) {
+          if (_isCompact) {
+            setState(() => _isCompact = false);
           }
         }
         return false;
@@ -72,47 +75,39 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
               ),
             ),
 
-            // 2. Özel Cam Pill Bottom Bar (Scroll Gizlemeli ve Sürüklemeli)
+            // 2. Özel Cam Pill Bottom Bar (Slide & Opacity kaldırıldı, isCompact bağlandı)
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
-              child: AnimatedSlide(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                offset: _isTabBarVisible ? Offset.zero : const Offset(0, 1.2),
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 200),
-                  opacity: _isTabBarVisible ? 1.0 : 0.0,
-                  child: LiquidPillBottomBar(
-                    currentIndex: _currentIndex,
-                    onTap: (index) {
-                      setState(() => _currentIndex = index);
-                    },
-                    items: const [
-                      LiquidBottomBarItem(
-                        icon: CupertinoIcons.news,
-                        activeIcon: CupertinoIcons.news_solid,
-                        label: 'Haberler',
-                      ),
-                      LiquidBottomBarItem(
-                        icon: CupertinoIcons.flag,
-                        activeIcon: CupertinoIcons.flag_fill,
-                        label: 'Sıralama',
-                      ),
-                      LiquidBottomBarItem(
-                        icon: CupertinoIcons.sparkles,
-                        activeIcon: CupertinoIcons.sparkles,
-                        label: 'Eureka YZ',
-                      ),
-                      LiquidBottomBarItem(
-                        icon: CupertinoIcons.person_circle,
-                        activeIcon: CupertinoIcons.person_circle_fill,
-                        label: 'Profil',
-                      ),
-                    ],
+              child: LiquidPillBottomBar(
+                currentIndex: _currentIndex,
+                isCompact: _isCompact, // Küçülme animasyonunu barın içine iletiyoruz
+                onTap: (index) {
+                  setState(() => _currentIndex = index);
+                },
+                items: const [
+                  LiquidBottomBarItem(
+                    icon: CupertinoIcons.news,
+                    activeIcon: CupertinoIcons.news_solid,
+                    label: 'Haberler',
                   ),
-                ),
+                  LiquidBottomBarItem(
+                    icon: CupertinoIcons.flag,
+                    activeIcon: CupertinoIcons.flag_fill,
+                    label: 'Sıralama',
+                  ),
+                  LiquidBottomBarItem(
+                    icon: CupertinoIcons.sparkles,
+                    activeIcon: CupertinoIcons.sparkles,
+                    label: 'Eureka YZ',
+                  ),
+                  LiquidBottomBarItem(
+                    icon: CupertinoIcons.person_circle,
+                    activeIcon: CupertinoIcons.person_circle_fill,
+                    label: 'Profil',
+                  ),
+                ],
               ),
             ),
           ],
