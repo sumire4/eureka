@@ -44,7 +44,7 @@
 
 ## Proje Hakkında
 
-**Eureka**, Formula 1 ve motor sporları takipçileri için **iOS Cupertino "Liquid Glass" (Sıvı Cam)** tasarım prensipleriyle geliştirilmiş çapraz platformlu (*iOS & Android*) bir mobil uygulamadır. Uygulama; güncel motor sporları haberlerini, canlı şampiyona verilerini, araç sensör telemetrilerini ve **Google Gemini + OpenF1** tabanlı istatistiksel yarış analizlerini tek bir arayüz altında birleştirir.
+**Eureka**, Formula 1 ve motor sporları takipçileri için belirli tasarım prensipleriyle geliştirilmiş çapraz platformlu (*iOS & Android*) bir mobil uygulamadır. Uygulama; güncel motor sporları haberlerini, canlı şampiyona verilerini, araç sensör telemetrilerini ve **Google Gemini + OpenF1** tabanlı istatistiksel yarış analizlerini tek bir arayüz altında birleştirir.
 
 
 ## Veri Gizliliği ve Uygulama İzinleri Politikası
